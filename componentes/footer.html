@@ -1,0 +1,452 @@
+<!-- ===========================================
+   LUXUM HOTEL — FOOTER
+   Dark Navy | 4 Columns | Gold Accents
+   =========================================== -->
+<style>
+  /* ---------- FOOTER SPECIFIC CSS ---------- */
+  .luxum-footer {
+    background-color: #0a1628;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle top gold line */
+  .luxum-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #c9a84c 20%,
+      #c9a84c 80%,
+      transparent 100%
+    );
+    opacity: 0.6;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px 40px;
+  }
+
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      padding: 70px 30px 50px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1.4fr 1fr 1.2fr 1.3fr;
+      padding: 80px 40px 60px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .footer-grid {
+      padding: 80px 0 60px;
+    }
+  }
+
+  /* ---------- COLUMN 1: BRAND ---------- */
+  .footer-brand .footer-logo {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #ffffff;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+
+  .footer-brand .footer-logo .gold-x {
+    color: #c9a84c;
+  }
+
+  .footer-brand .footer-tagline {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin-bottom: 16px;
+  }
+
+  .footer-brand .footer-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 20px;
+    max-width: 280px;
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: 14px;
+  }
+
+  .footer-socials a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    color: #c9a84c;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 15px;
+    text-decoration: none;
+  }
+
+  .footer-socials a:hover {
+    background-color: #c9a84c;
+    color: #0a1628;
+    border-color: #c9a84c;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(201, 168, 76, 0.25);
+  }
+
+  /* ---------- COLUMN 2: QUICK LINKS ---------- */
+  .footer-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 12px;
+  }
+
+  .footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background-color: #c9a84c;
+    border-radius: 1px;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-links a {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding-left: 0;
+    position: relative;
+  }
+
+  .footer-links a::before {
+    content: '›';
+    position: absolute;
+    left: -14px;
+    opacity: 0;
+    color: #c9a84c;
+    transition: all 0.3s ease;
+  }
+
+  .footer-links a:hover {
+    color: #c9a84c;
+    padding-left: 10px;
+  }
+
+  .footer-links a:hover::before {
+    opacity: 1;
+    left: -8px;
+  }
+
+  /* ---------- COLUMN 3: CONTACT ---------- */
+  .footer-contact-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+
+  .footer-contact-item .contact-icon {
+    flex-shrink: 0;
+    font-size: 16px;
+    margin-top: 1px;
+  }
+
+  .footer-contact-item a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-contact-item a:hover {
+    color: #c9a84c;
+  }
+
+  .checkin-info {
+    margin-top: 4px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
+  }
+
+  /* ---------- COLUMN 4: NEWSLETTER ---------- */
+  .newsletter-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (min-width: 400px) {
+    .newsletter-form {
+      flex-direction: row;
+    }
+  }
+
+  .newsletter-form input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 0;
+  }
+
+  .newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  .newsletter-form input:focus {
+    border-color: #c9a84c;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08);
+  }
+
+  .newsletter-form button {
+    padding: 12px 20px;
+    background-color: #c9a84c;
+    color: #0a1628;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+  }
+
+  .newsletter-form button:hover {
+    background-color: #d4b65f;
+    box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3);
+  }
+
+  .newsletter-spam-note {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 10px;
+  }
+
+  /* ---------- BOTTOM BAR ---------- */
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 18px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 18px 30px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-bottom {
+      padding: 18px 40px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .footer-bottom {
+      padding: 18px 0;
+    }
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-bottom-links a {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-bottom-links a:hover {
+    color: #c9a84c;
+  }
+
+  .footer-bottom .copyright span {
+    color: #c9a84c;
+  }
+
+  /* ---------- MOBILE: Centered alignment ---------- */
+  @media (max-width: 767px) {
+    .footer-grid {
+      text-align: center;
+    }
+    .footer-brand .footer-desc {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .footer-socials {
+      justify-content: center;
+    }
+    .footer-heading::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .footer-links a {
+      padding-left: 0;
+    }
+    .footer-links a::before {
+      display: none;
+    }
+    .footer-links a:hover {
+      padding-left: 0;
+    }
+    .footer-contact-item {
+      justify-content: center;
+    }
+    .footer-bottom {
+      text-align: center;
+    }
+  }
+</style>
+
+<!-- ========== FOOTER HTML ========== -->
+<footer class="luxum-footer">
+  <div class="footer-grid">
+    <!-- Column 1: Brand -->
+    <div class="footer-brand">
+      <div class="footer-logo">LU<span class="gold-x">X</span>UM</div>
+      <p class="footer-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+      <p class="footer-desc">
+        Experience unparalleled luxury in the cultural heart of Nepal. 
+        Luxum Hotel blends timeless elegance with warm Nepali hospitality 
+        for an unforgettable stay.
+      </p>
+      <div class="footer-socials">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="Instagram">◉</a>
+        <a href="#" aria-label="Twitter">𝕏</a>
+        <a href="#" aria-label="TripAdvisor">★</a>
+      </div>
+    </div>
+
+    <!-- Column 2: Quick Links -->
+    <div>
+      <h4 class="footer-heading">Quick Links</h4>
+      <div class="footer-links">
+        <a href="#home">Home</a>
+        <a href="#rooms">Rooms</a>
+        <a href="#restaurant">Restaurant</a>
+        <a href="#amenities">Amenities</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#booking">Booking</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+
+    <!-- Column 3: Contact Info -->
+    <div>
+      <h4 class="footer-heading">Contact</h4>
+      <div class="footer-contact-item">
+        <span class="contact-icon">📍</span>
+        <span>Kamaladi, Kathmandu 44600, Nepal</span>
+      </div>
+      <div class="footer-contact-item">
+        <span class="contact-icon">📞</span>
+        <a href="tel:+97714234567">+977-1-4234567</a>
+      </div>
+      <div class="footer-contact-item">
+        <span class="contact-icon">✉️</span>
+        <a href="mailto:info@luxumhotel.com">info@luxumhotel.com</a>
+      </div>
+      <div class="footer-contact-item">
+        <span class="contact-icon">🕐</span>
+        <span>
+          Check-in: 2PM<br>
+          Check-out: 12PM
+        </span>
+      </div>
+    </div>
+
+    <!-- Column 4: Newsletter -->
+    <div>
+      <h4 class="footer-heading">Stay Updated</h4>
+      <p class="newsletter-text">
+        Subscribe for exclusive offers, seasonal packages, and luxury travel inspiration.
+      </p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+        <input type="email" placeholder="Your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
+      <p class="newsletter-spam-note">No spam, ever. Unsubscribe anytime.</p>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <div class="copyright">
+      Copyright &copy; <span>2026</span> Luxum Hotel. All rights reserved.
+    </div>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">Admin</a>
+    </div>
+  </div>
+</footer>

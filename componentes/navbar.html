@@ -1,0 +1,500 @@
+<!-- ===========================================
+   LUXUM HOTEL — NAVIGATION BAR
+   Transparent → Navy Glass on Scroll
+   =========================================== -->
+<style>
+  /* ---------- NAVBAR SPECIFIC CSS ---------- */
+  :root {
+    --nav-height: 80px;
+    --nav-height-scrolled: 68px;
+  }
+
+  .luxum-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: var(--nav-height);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    padding: 0;
+  }
+
+  /* Scrolled state */
+  .luxum-navbar.scrolled {
+    height: var(--nav-height-scrolled);
+    background: rgba(10, 22, 40, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+  }
+
+  /* Hidden state (scroll down) */
+  .luxum-navbar.hidden {
+    transform: translateY(-100%);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  @media (min-width: 768px) {
+    .nav-inner {
+      padding: 0 30px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-inner {
+      padding: 0 40px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .nav-inner {
+      padding: 0;
+    }
+  }
+
+  /* ---------- LOGO ---------- */
+  .nav-logo-wrap {
+    position: relative;
+    z-index: 1001;
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .nav-logo .gold-x {
+    color: #c9a84c;
+  }
+
+  .nav-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: -2px;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+  }
+
+  .scrolled .nav-tagline {
+    opacity: 0.8;
+  }
+
+  /* Hide tagline on mobile */
+  @media (max-width: 767px) {
+    .nav-tagline {
+      display: none;
+    }
+    .nav-logo {
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+    }
+  }
+
+  /* ---------- DESKTOP NAV LINKS ---------- */
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .nav-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    position: relative;
+    padding: 4px 0;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background-color: #c9a84c;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: #c9a84c;
+  }
+
+  .nav-links a:hover::after,
+  .nav-links a.active::after {
+    width: 100%;
+  }
+
+  /* Booking CTA in nav */
+  .nav-cta {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #0a1628 !important;
+    background-color: #c9a84c;
+    padding: 10px 22px !important;
+    border-radius: 4px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: 2px solid #c9a84c;
+  }
+
+  .nav-cta::after {
+    display: none !important;
+  }
+
+  .nav-cta:hover {
+    background-color: #d4b65f !important;
+    color: #0a1628 !important;
+    box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 1023px) {
+    .nav-links {
+      display: none;
+    }
+  }
+
+  /* ---------- HAMBURGER ---------- */
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1001;
+    background: none;
+    border: none;
+    padding: 4px;
+    gap: 6px;
+    transition: gap 0.3s ease;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 26px;
+    height: 2px;
+    background-color: #ffffff;
+    border-radius: 2px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  .nav-hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .nav-hamburger.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .nav-hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  @media (min-width: 1024px) {
+    .nav-hamburger {
+      display: none;
+    }
+  }
+
+  /* ---------- MOBILE MENU OVERLAY ---------- */
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(10, 22, 40, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .mobile-menu-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+  }
+
+  .mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .mobile-menu-links a {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.35s ease;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .mobile-menu-overlay.open .mobile-menu-links a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(1) { transition-delay: 0.08s; }
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(2) { transition-delay: 0.14s; }
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(3) { transition-delay: 0.20s; }
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(4) { transition-delay: 0.26s; }
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(5) { transition-delay: 0.32s; }
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(6) { transition-delay: 0.38s; }
+  .mobile-menu-overlay.open .mobile-menu-links a:nth-child(7) { transition-delay: 0.44s; }
+
+  .mobile-menu-links a:hover {
+    color: #c9a84c;
+  }
+
+  .mobile-menu-cta {
+    margin-top: 8px;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 2px !important;
+    color: #0a1628 !important;
+    background-color: #c9a84c;
+    padding: 14px 36px !important;
+    border-radius: 4px;
+  }
+
+  .mobile-menu-cta:hover {
+    background-color: #d4b65f !important;
+    color: #0a1628 !important;
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-menu-overlay {
+      display: none;
+    }
+  }
+</style>
+
+<!-- ========== NAVBAR HTML ========== -->
+<nav class="luxum-navbar" id="luxumNavbar">
+  <div class="nav-inner">
+    <!-- Logo -->
+    <div class="nav-logo-wrap">
+      <a href="#" class="nav-logo">LU<span class="gold-x">X</span>UM</a>
+      <p class="nav-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+    </div>
+
+    <!-- Desktop Links -->
+    <div class="nav-links">
+      <a href="#home" class="active">Home</a>
+      <a href="#rooms">Rooms</a>
+      <a href="#restaurant">Restaurant</a>
+      <a href="#amenities">Amenities</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Contact</a>
+      <a href="#booking" class="nav-cta">Book Now</a>
+    </div>
+
+    <!-- Hamburger -->
+    <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Overlay -->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay">
+  <div class="mobile-menu-links">
+    <a href="#home">Home</a>
+    <a href="#rooms">Rooms</a>
+    <a href="#restaurant">Restaurant</a>
+    <a href="#amenities">Amenities</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+    <a href="#booking" class="mobile-menu-cta">Book Now</a>
+  </div>
+</div>
+
+<!-- ========== NAVBAR JS ========== -->
+<script>
+  (function() {
+    const navbar = document.getElementById('luxumNavbar');
+    const hamburger = document.getElementById('navHamburger');
+    const mobileMenu = document.getElementById('mobileMenuOverlay');
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    // --- Scroll: add scrolled class & hide/show ---
+    function updateNavOnScroll() {
+      const currentScrollY = window.scrollY;
+
+      // Scrolled state
+      if (currentScrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+
+      // Hide/show on scroll direction (only when not at top & not mobile menu open)
+      if (!mobileMenu.classList.contains('open')) {
+        if (currentScrollY > lastScrollY && currentScrollY > 300) {
+          // Scrolling down
+          navbar.classList.add('hidden');
+        } else {
+          // Scrolling up
+          navbar.classList.remove('hidden');
+        }
+      }
+
+      lastScrollY = currentScrollY;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(updateNavOnScroll);
+        ticking = true;
+      }
+    });
+
+    // --- Mobile Menu Toggle ---
+    function openMenu() {
+      mobileMenu.classList.add('open');
+      hamburger.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', () => {
+      if (mobileMenu.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    // Close on link click
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        closeMenu();
+      });
+    });
+
+    // --- Active Link Highlighting on Scroll ---
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+
+    function updateActiveLink() {
+      let currentSectionId = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          currentSectionId = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSectionId) {
+          link.classList.add('active');
+        }
+      });
+
+      // If at top, highlight Home
+      if (window.scrollY < 100) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#home') {
+            link.classList.add('active');
+          }
+        });
+      }
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateActiveLink();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // Smooth scroll for all nav links
+    document.querySelectorAll('.nav-links a, .mobile-menu-links a').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href && href.startsWith('#') && href.length > 1) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const offsetTop = target.offsetTop - 80;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+
+    // Initialize
+    updateActiveLink();
+  })();
+</script>
