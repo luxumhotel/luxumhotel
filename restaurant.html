@@ -1050,17 +1050,16 @@
             if (!validateForm()) return;
 
             const formData = {
-                guest_name: document.getElementById('guestName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                date: document.getElementById('diningDate').value,
-                time: document.getElementById('diningTime').value,
-                guests: parseInt(document.getElementById('guests').value, 10),
-                seating: document.getElementById('seating').value,
-                occasion: document.getElementById('occasion').value || null,
-                special_requests: document.getElementById('specialRequests').value.trim() || null,
-                status: 'pending'
-            };
+  guest_name: document.getElementById('fullName').value.trim(),
+  email: document.getElementById('email').value.trim(),
+  phone: document.getElementById('phone').value.trim(),
+  date: document.getElementById('diningDate').value,
+  time: document.getElementById('diningTime').value,
+  guests: parseInt(document.getElementById('guests').value),
+  seating: document.getElementById('seating').value,
+  occasion: document.getElementById('occasion').value,
+  special_requests: document.getElementById('specialRequests').value.trim()
+};
 
             // Try Supabase insert
             try {
