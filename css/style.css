@@ -1,0 +1,347 @@
+/* ===========================================
+   LUXUM HOTEL — SHARED STYLESHEET
+   Modern Luxury | Kamaladi, Kathmandu, Nepal
+   =========================================== */
+
+/* ---------- RESET & BASE ---------- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background-color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-fast) ease;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-dark);
+}
+
+/* ---------- CSS VARIABLES ---------- */
+:root {
+  /* Colors */
+  --primary-dark: #0a1628;
+  --primary-gold: #c9a84c;
+  --primary-gold-hover: #d4b65f;
+  --primary-gold-dark: #a88b3a;
+  --secondary-green: #1a3a2a;
+  --white: #ffffff;
+  --light-gray: #f8f9fa;
+  --text-dark: #1a1a2e;
+  --text-light: #6c757d;
+  --text-muted: #adb5bd;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(10, 22, 40, 0.08);
+  --shadow-md: 0 4px 20px rgba(10, 22, 40, 0.12);
+  --shadow-lg: 0 10px 40px rgba(10, 22, 40, 0.18);
+  --shadow-gold: 0 4px 16px rgba(201, 168, 76, 0.25);
+
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --border-radius-full: 50%;
+
+  /* Transitions */
+  --transition-fast: 0.2s;
+  --transition-normal: 0.35s;
+  --transition-slow: 0.5s;
+  --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- UTILITY CLASSES ---------- */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.section-padding {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .section-padding {
+    padding-top: 120px;
+    padding-bottom: 120px;
+  }
+}
+
+/* Text Colors */
+.text-gold {
+  color: var(--primary-gold) !important;
+}
+
+.text-white {
+  color: var(--white) !important;
+}
+
+.text-dark {
+  color: var(--text-dark) !important;
+}
+
+.text-light {
+  color: var(--text-light) !important;
+}
+
+/* Backgrounds */
+.bg-dark {
+  background-color: var(--primary-dark);
+}
+
+.bg-gold {
+  background-color: var(--primary-gold);
+}
+
+.bg-green {
+  background-color: var(--secondary-green);
+}
+
+.bg-light {
+  background-color: var(--light-gray);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-primary,
+.btn-secondary,
+.btn-white {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: var(--border-radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-normal) var(--easing-smooth);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--primary-gold);
+  color: var(--primary-dark);
+  border-color: var(--primary-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-gold-hover);
+  border-color: var(--primary-gold-hover);
+  box-shadow: 0 6px 24px rgba(201, 168, 76, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--primary-gold);
+  border-color: var(--primary-gold);
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-gold);
+  color: var(--primary-dark);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-2px);
+}
+
+.btn-white {
+  background-color: var(--white);
+  color: var(--primary-dark);
+  border-color: var(--white);
+}
+
+.btn-white:hover {
+  background-color: transparent;
+  color: var(--white);
+  border-color: var(--white);
+}
+
+/* ---------- SECTION TITLES ---------- */
+.section-title {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 2.8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-title {
+    font-size: 3.2rem;
+  }
+}
+
+.section-subtitle {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--primary-gold);
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.divider-gold {
+  width: 60px;
+  height: 3px;
+  background-color: var(--primary-gold);
+  border: none;
+  margin: 16px 0 24px;
+  border-radius: 2px;
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-slow) var(--easing-smooth) both;
+}
+
+.slide-up {
+  animation: slideUp 0.6s var(--easing-smooth) both;
+}
+
+/* Shimmer loading placeholder */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--light-gray) 0%,
+    #e9ecef 40%,
+    var(--light-gray) 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: var(--border-radius-sm);
+}
+
+/* ---------- RESPONSIVE BREAKPOINTS ---------- */
+/* Mobile first — base styles above */
+
+/* Tablet: 768px+ */
+@media (min-width: 768px) {
+  .container {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+/* Desktop: 1024px+ */
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+/* Large: 1200px+ */
+@media (min-width: 1200px) {
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Print styles */
+@media print {
+  .btn-primary,
+  .btn-secondary,
+  .btn-white {
+    border: 1px solid #000;
+    color: #000;
+    background: none;
+    box-shadow: none;
+  }
+}
