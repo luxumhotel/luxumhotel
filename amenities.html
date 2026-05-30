@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amenities & Facilities — Luxum Hotel</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- ========== NAVBAR CSS ========== -->
+    <style>
+        :root {
+            --nav-height: 80px;
+            --nav-height-scrolled: 68px;
+        }
+        .luxum-navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            height: var(--nav-height); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent; padding: 0;
+        }
+        .luxum-navbar.scrolled {
+            height: var(--nav-height-scrolled);
+            background: rgba(10, 22, 40, 0.85); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        .luxum-navbar.hidden { transform: translateY(-100%); }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px;
+        }
+        @media (min-width: 768px) { .nav-inner { padding: 0 30px; } }
+        @media (min-width: 1024px) { .nav-inner { padding: 0 40px; } }
+        @media (min-width: 1200px) { .nav-inner { padding: 0; } }
+        .nav-logo-wrap { position: relative; z-index: 1001; }
+        .nav-logo {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem;
+            font-weight: 700; letter-spacing: 3px; color: #ffffff;
+            text-decoration: none; transition: color 0.3s ease;
+        }
+        .nav-logo .gold-x { color: #c9a84c; }
+        .nav-tagline {
+            font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 400;
+            letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.7);
+            margin-top: -2px; white-space: nowrap; transition: opacity 0.3s ease;
+        }
+        .scrolled .nav-tagline { opacity: 0.8; }
+        @media (max-width: 767px) { .nav-tagline { display: none; } .nav-logo { font-size: 1.5rem; letter-spacing: 2px; } }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a {
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+            letter-spacing: 0.8px; text-transform: uppercase; color: rgba(255,255,255,0.85);
+            text-decoration: none; position: relative; padding: 4px 0;
+            transition: color 0.3s ease; white-space: nowrap;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 0;
+            height: 1.5px; background-color: #c9a84c;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-links a:hover, .nav-links a.active { color: #c9a84c; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-cta {
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; color: #0a1628 !important;
+            background-color: #c9a84c; padding: 10px 22px !important; border-radius: 4px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 2px solid #c9a84c;
+        }
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover { background-color: #d4b65f !important; color: #0a1628 !important; box-shadow: 0 6px 20px rgba(201,168,76,0.3); transform: translateY(-1px); }
+        @media (max-width: 1023px) { .nav-links { display: none; } }
+        .nav-hamburger {
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; width: 40px; height: 40px; cursor: pointer;
+            z-index: 1001; background: none; border: none; padding: 4px; gap: 6px;
+        }
+        .nav-hamburger span {
+            display: block; width: 26px; height: 2px; background-color: #ffffff;
+            border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .nav-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        @media (min-width: 1024px) { .nav-hamburger { display: none; } }
+        .mobile-menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(10,22,40,0.97); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); z-index: 999;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.45s ease; pointer-events: none;
+        }
+        .mobile-menu-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
+        .mobile-menu-links { display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; }
+        .mobile-menu-links a {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 2rem;
+            font-weight: 600; color: #ffffff; text-decoration: none; letter-spacing: 1px;
+            transition: all 0.35s ease; opacity: 0; transform: translateY(20px);
+        }
+        .mobile-menu-overlay.open .mobile-menu-links a { opacity: 1; transform: translateY(0); }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(1) { transition-delay: 0.08s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(2) { transition-delay: 0.14s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(3) { transition-delay: 0.20s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(4) { transition-delay: 0.26s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(5) { transition-delay: 0.32s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(6) { transition-delay: 0.38s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(7) { transition-delay: 0.44s; }
+        .mobile-menu-links a:hover { color: #c9a84c; }
+        .mobile-menu-cta {
+            margin-top: 8px; font-family: 'Inter', sans-serif !important;
+            font-size: 1rem !important; font-weight: 600 !important;
+            text-transform: uppercase; letter-spacing: 2px !important;
+            color: #0a1628 !important; background-color: #c9a84c;
+            padding: 14px 36px !important; border-radius: 4px;
+        }
+        .mobile-menu-cta:hover { background-color: #d4b65f !important; color: #0a1628 !important; }
+        @media (min-width: 1024px) { .mobile-menu-overlay { display: none; } }
+    </style>
+
+    <!-- ========== FOOTER CSS ========== -->
+    <style>
+        .luxum-footer { background-color: #0a1628; color: rgba(255,255,255,0.8); font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
+        .luxum-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent 0%, #c9a84c 20%, #c9a84c 80%, transparent 100%); opacity: 0.6; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 60px 20px 40px; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; padding: 70px 30px 50px; } }
+        @media (min-width: 1024px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1.2fr 1.3fr; padding: 80px 40px 60px; } }
+        @media (min-width: 1200px) { .footer-grid { padding: 80px 0 60px; } }
+        .footer-brand .footer-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 3px; color: #ffffff; margin-bottom: 6px; display: inline-block; }
+        .footer-brand .footer-logo .gold-x { color: #c9a84c; }
+        .footer-brand .footer-tagline { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: #c9a84c; margin-bottom: 16px; }
+        .footer-brand .footer-desc { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.6); margin-bottom: 20px; max-width: 280px; }
+        .footer-socials { display: flex; gap: 14px; }
+        .footer-socials a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(201,168,76,0.35); color: #c9a84c; transition: all 0.35s ease; font-size: 15px; text-decoration: none; }
+        .footer-socials a:hover { background-color: #c9a84c; color: #0a1628; border-color: #c9a84c; transform: translateY(-3px); box-shadow: 0 6px 18px rgba(201,168,76,0.25); }
+        .footer-heading { font-family: 'Playfair Display', Georgia, serif; font-size: 1.1rem; font-weight: 600; color: #ffffff; margin-bottom: 20px; letter-spacing: 0.5px; position: relative; padding-bottom: 12px; }
+        .footer-heading::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30px; height: 2px; background-color: #c9a84c; border-radius: 1px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-links a { font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; transition: all 0.3s ease; padding-left: 0; position: relative; }
+        .footer-links a::before { content: '›'; position: absolute; left: -14px; opacity: 0; color: #c9a84c; transition: all 0.3s ease; }
+        .footer-links a:hover { color: #c9a84c; padding-left: 10px; }
+        .footer-links a:hover::before { opacity: 1; left: -8px; }
+        .footer-contact-item { display: flex; gap: 12px; margin-bottom: 14px; font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.5; align-items: flex-start; }
+        .footer-contact-item .contact-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+        .footer-contact-item a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact-item a:hover { color: #c9a84c; }
+        .newsletter-text { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; line-height: 1.6; }
+        .newsletter-form { display: flex; flex-direction: column; gap: 10px; }
+        @media (min-width: 400px) { .newsletter-form { flex-direction: row; } }
+        .newsletter-form input { flex: 1; padding: 12px 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; outline: none; transition: all 0.3s ease; min-width: 0; }
+        .newsletter-form input::placeholder { color: rgba(255,255,255,0.35); }
+        .newsletter-form input:focus { border-color: #c9a84c; background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
+        .newsletter-form button { padding: 12px 20px; background-color: #c9a84c; color: #0a1628; border: none; border-radius: 4px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; transition: all 0.35s ease; white-space: nowrap; }
+        .newsletter-form button:hover { background-color: #d4b65f; box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+        .newsletter-spam-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 10px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: 18px 20px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.4); }
+        @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; padding: 18px 30px; } }
+        @media (min-width: 1024px) { .footer-bottom { padding: 18px 40px; } }
+        @media (min-width: 1200px) { .footer-bottom { padding: 18px 0; } }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.3s ease; }
+        .footer-bottom-links a:hover { color: #c9a84c; }
+        .footer-bottom .copyright span { color: #c9a84c; }
+        @media (max-width: 767px) {
+            .footer-grid { text-align: center; } .footer-brand .footer-desc { margin-left: auto; margin-right: auto; }
+            .footer-socials { justify-content: center; } .footer-heading::after { left: 50%; transform: translateX(-50%); }
+            .footer-links a { padding-left: 0; } .footer-links a::before { display: none; }
+            .footer-links a:hover { padding-left: 0; } .footer-contact-item { justify-content: center; }
+            .footer-bottom { text-align: center; }
+        }
+    </style>
+    <!-- ========== PAGE SPECIFIC STYLES ========== -->
+    <style>
+        .amenities-hero {
+            height: 50vh; min-height: 350px;
+            background: linear-gradient(135deg, #0a1628 0%, #0f2440 50%, #1a3a2a 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .amenities-hero-content { position: relative; z-index: 1; max-width: 700px; padding: 0 20px; animation: slideUpHero 0.8s ease forwards; }
+        @keyframes slideUpHero { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .breadcrumb { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .breadcrumb a { color: #c9a84c; text-decoration: none; }
+        .hero-label { display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4); color: #c9a84c; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .amenities-hero-content h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 2.5rem; color: #fff; margin-bottom: 12px; }
+        .amenities-hero-content p { color: rgba(255,255,255,0.65); font-size: 1rem; line-height: 1.6; }
+        @media (min-width: 768px) { .amenities-hero-content h1 { font-size: 3.2rem; } }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Stats Bar */
+        .stats-bar { background: linear-gradient(135deg, #c9a84c 0%, #d4b65f 50%, #c9a84c 100%); padding: 30px 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1000px; margin: 0 auto; text-align: center; }
+        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-item { padding: 10px; }
+        .stat-number { font-family: 'Playfair Display', Georgia, serif; font-size: 2rem; font-weight: 700; color: #0a1628; }
+        .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(10,22,40,0.7); }
+
+        /* Category Section */
+        .category-header { text-align: center; margin-bottom: 36px; }
+        .category-header .cat-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .category-header h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; color: #1a1a2e; }
+        .category-header .gold-line { width: 50px; height: 3px; background: #c9a84c; margin: 12px auto 0; border-radius: 2px; }
+
+        /* Amenity Cards */
+        .amenities-grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 768px) { .amenities-grid-2 { grid-template-columns: repeat(2, 1fr); } }
+        .amenities-grid-3 { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 600px) { .amenities-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .amenities-grid-3 { grid-template-columns: repeat(3, 1fr); } }
+        .amenities-grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        @media (min-width: 768px) { .amenities-grid-4 { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { .amenities-grid-4 { grid-template-columns: repeat(4, 1fr); } }
+
+        .amenity-card {
+            background: #fff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05); transition: all 0.35s ease;
+            border: 1px solid transparent; position: relative; overflow: hidden;
+        }
+        .amenity-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.1); border-color: #c9a84c; }
+        .amenity-card .amenity-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .amenity-card h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.2rem; margin-bottom: 6px; }
+        .amenity-card .amenity-desc { font-size: 13px; color: #6c757d; line-height: 1.6; margin-bottom: 12px; }
+        .amenity-card .amenity-hours {
+            display: inline-block; background: #c9a84c; color: #0a1628; padding: 4px 12px;
+            border-radius: 50px; font-size: 11px; font-weight: 600; margin-bottom: 10px;
+        }
+        .amenity-card .amenity-meta { font-size: 12px; color: #495057; margin-bottom: 4px; }
+        .amenity-card .amenity-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .amenity-tag { font-size: 10px; background: #f8f9fa; color: #495057; padding: 4px 10px; border-radius: 50px; font-weight: 500; }
+
+        /* Small amenity tile for In-Room */
+        .amenity-tile {
+            background: #fff; border-radius: 10px; padding: 20px 14px; text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .amenity-tile:hover { border-color: #c9a84c; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+        .amenity-tile .tile-icon { font-size: 2rem; margin-bottom: 8px; }
+        .amenity-tile h4 { font-size: 0.9rem; margin-bottom: 2px; }
+        .amenity-tile p { font-size: 11px; color: #6c757d; }
+
+        /* Experience Cards */
+        .experiences-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 768px) { .experiences-grid { grid-template-columns: repeat(3, 1fr); } }
+        .experience-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 12px; padding: 28px 20px; text-align: center;
+            transition: all 0.35s ease; color: #fff;
+        }
+        .experience-card:hover { border-color: #c9a84c; background: rgba(201,168,76,0.08); transform: translateY(-4px); }
+        .experience-card .exp-icon { font-size: 3rem; margin-bottom: 12px; }
+        .experience-card h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.2rem; color: #c9a84c; margin-bottom: 8px; }
+        .experience-card .exp-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 14px; }
+        .experience-card .exp-detail { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+        .experience-card .exp-price { font-weight: 700; color: #c9a84c; font-size: 1.1rem; margin: 10px 0; }
+        .experience-card .exp-includes { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 16px; }
+
+        /* CTA */
+        .amenities-cta { background: linear-gradient(135deg, #c9a84c 0%, #d4b65f 50%, #c9a84c 100%); text-align: center; padding: 60px 20px; }
+        .amenities-cta h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 2rem; color: #0a1628; margin-bottom: 10px; }
+        .amenities-cta p { color: rgba(10,22,40,0.8); margin-bottom: 24px; font-size: 1rem; }
+        .amenities-cta .cta-buttons { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+        @media (min-width: 768px) { .amenities-cta h2 { font-size: 2.6rem; } }
+    </style>
+</head>
+<body>
+    <!-- ========== NAVBAR ========== -->
+    <nav class="luxum-navbar scrolled" id="luxumNavbar">
+        <div class="nav-inner">
+            <div class="nav-logo-wrap">
+                <a href="index.html" class="nav-logo">LU<span class="gold-x">X</span>UM</a>
+                <p class="nav-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="rooms.html">Rooms</a>
+                <a href="restaurant.html">Restaurant</a>
+                <a href="amenities.html" class="active">Amenities</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#contact">Contact</a>
+                <a href="booking.html" class="nav-cta">Book Now</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-links">
+            <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+            <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+            <a href="#gallery">Gallery</a><a href="#contact">Contact</a>
+            <a href="booking.html" class="mobile-menu-cta">Book Now</a>
+        </div>
+    </div>
+
+    <!-- ========== HERO ========== -->
+    <section class="amenities-hero">
+        <div class="amenities-hero-content">
+            <div class="breadcrumb"><a href="index.html">Home</a> › Amenities</div>
+            <div class="hero-label">World Class Facilities</div>
+            <h1>Hotel Amenities</h1>
+            <p>Every detail crafted for your ultimate comfort and pleasure</p>
+            <hr style="width:60px; height:3px; background:#c9a84c; border:none; margin:20px auto; border-radius:2px;">
+        </div>
+    </section>
+
+    <!-- ========== STATS BAR ========== -->
+    <div class="stats-bar">
+        <div class="stats-grid">
+            <div class="stat-item"><div class="stat-number" data-target="20">0</div><div class="stat-label">World Class Amenities</div></div>
+            <div class="stat-item"><div class="stat-number" data-target="24">0</div><div class="stat-label">7 Services Available</div></div>
+            <div class="stat-item"><div class="stat-number" data-target="5">0</div><div class="stat-label">★ Luxury Standard</div></div>
+            <div class="stat-item"><div class="stat-number" data-target="100">0</div><div class="stat-label">% Guest Satisfaction</div></div>
+        </div>
+    </div>
+
+    <!-- ========== CATEGORY 1: Wellness & Recreation ========== -->
+    <section class="section-padding reveal">
+        <div class="container">
+            <div class="category-header">
+                <div class="cat-icon">💚</div>
+                <h2>Wellness & Recreation</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="amenities-grid-2">
+                <div class="amenity-card">
+                    <div class="amenity-icon">🏊</div>
+                    <h3>Swimming Pool</h3>
+                    <p class="amenity-desc">Infinity rooftop pool with panoramic city views</p>
+                    <span class="amenity-hours">6:00 AM — 10:00 PM</span>
+                    <p class="amenity-meta">📍 Rooftop, 12th Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Heated</span><span class="amenity-tag">City View</span><span class="amenity-tag">Towels Provided</span><span class="amenity-tag">Pool Bar</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">💆</div>
+                    <h3>Spa & Massage</h3>
+                    <p class="amenity-desc">Rejuvenating treatments by certified therapists</p>
+                    <span class="amenity-hours">9:00 AM — 9:00 PM</span>
+                    <p class="amenity-meta">📍 2nd Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">6 Treatment Rooms</span><span class="amenity-tag">Couples Suite</span><span class="amenity-tag">Steam Room</span><span class="amenity-tag">Aromatherapy</span><span class="amenity-tag">Hot Stone</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">💪</div>
+                    <h3>Fitness Center</h3>
+                    <p class="amenity-desc">State-of-the-art equipment for the modern athlete</p>
+                    <span class="amenity-hours">5:00 AM — 11:00 PM</span>
+                    <p class="amenity-meta">📍 3rd Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Cardio Zone</span><span class="amenity-tag">Weight Training</span><span class="amenity-tag">Personal Trainer</span><span class="amenity-tag">Towels & Water</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🧘</div>
+                    <h3>Yoga Room</h3>
+                    <p class="amenity-desc">Daily guided sessions with certified yoga instructors</p>
+                    <span class="amenity-hours">6:00 AM — 8:00 PM</span>
+                    <p class="amenity-meta">📍 3rd Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Daily Classes</span><span class="amenity-tag">Mat & Props</span><span class="amenity-tag">Meditation</span><span class="amenity-tag">Private Sessions</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CATEGORY 2: Dining & Entertainment ========== -->
+    <section class="section-padding bg-light reveal">
+        <div class="container">
+            <div class="category-header">
+                <div class="cat-icon">🍽️</div>
+                <h2>Dining & Entertainment</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="amenities-grid-2">
+                <div class="amenity-card">
+                    <div class="amenity-icon">🌙</div>
+                    <h3>Restaurant Luxum (Rooftop)</h3>
+                    <p class="amenity-desc">Fine dining above the city</p>
+                    <span class="amenity-hours">6:00 PM — 11:00 PM</span>
+                    <p class="amenity-meta">📍 13th Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">80 Covers</span><span class="amenity-tag">City Views</span><span class="amenity-tag">International Menu</span><span class="amenity-tag">Bar Service</span><span class="amenity-tag">Reservation Required</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🏠</div>
+                    <h3>Restaurant Luxum (Indoor)</h3>
+                    <p class="amenity-desc">All-day dining experience</p>
+                    <span class="amenity-hours">7:00 AM — 10:30 PM</span>
+                    <p class="amenity-meta">📍 Ground Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">120 Covers</span><span class="amenity-tag">Live Cooking Stations</span><span class="amenity-tag">International Buffet</span><span class="amenity-tag">Private Dining Room</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🍸</div>
+                    <h3>Bar & Lounge</h3>
+                    <p class="amenity-desc">Premium cocktails and fine spirits</p>
+                    <span class="amenity-hours">12:00 PM — 1:00 AM</span>
+                    <p class="amenity-meta">📍 Ground Floor + Rooftop</p>
+                    <div class="amenity-tags"><span class="amenity-tag">200+ Spirits</span><span class="amenity-tag">Craft Cocktails</span><span class="amenity-tag">Live Music (Fri & Sat)</span><span class="amenity-tag">Cigar Lounge</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🛎️</div>
+                    <h3>24/7 Room Service</h3>
+                    <p class="amenity-desc">Gourmet dining in your private suite</p>
+                    <span class="amenity-hours">24 Hours</span>
+                    <div class="amenity-tags"><span class="amenity-tag">Full Menu Available</span><span class="amenity-tag">30-Min Delivery</span><span class="amenity-tag">Premium Presentation</span><span class="amenity-tag">Special Dietary Options</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CATEGORY 3: Business & Events ========== -->
+    <section class="section-padding reveal">
+        <div class="container">
+            <div class="category-header">
+                <div class="cat-icon">💼</div>
+                <h2>Business & Events</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="amenities-grid-3">
+                <div class="amenity-card">
+                    <div class="amenity-icon">🏢</div>
+                    <h3>Conference Room</h3>
+                    <p class="amenity-desc">State-of-the-art meeting facilities</p>
+                    <p class="amenity-meta">👥 Up to 50 Guests</p>
+                    <p class="amenity-meta">📍 4th Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">AV Equipment</span><span class="amenity-tag">High-Speed WiFi</span><span class="amenity-tag">Video Conferencing</span><span class="amenity-tag">Catering Service</span><span class="amenity-tag">Secretarial Support</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🎉</div>
+                    <h3>Banquet Hall</h3>
+                    <p class="amenity-desc">Elegant venue for unforgettable events</p>
+                    <p class="amenity-meta">👥 Up to 200 Guests</p>
+                    <p class="amenity-meta">📍 5th Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Wedding Packages</span><span class="amenity-tag">Custom Decoration</span><span class="amenity-tag">Catering Service</span><span class="amenity-tag">Dance Floor</span><span class="amenity-tag">Stage</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🖨️</div>
+                    <h3>Business Center</h3>
+                    <p class="amenity-desc">Professional workspace for business travelers</p>
+                    <span class="amenity-hours">24 Hours</span>
+                    <p class="amenity-meta">📍 Ground Floor</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Printing & Scanning</span><span class="amenity-tag">High-Speed Internet</span><span class="amenity-tag">Private Meeting Pods</span><span class="amenity-tag">Secretarial Services</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========== CATEGORY 4: Guest Services ========== -->
+    <section class="section-padding bg-light reveal">
+        <div class="container">
+            <div class="category-header">
+                <div class="cat-icon">🛎️</div>
+                <h2>Guest Services</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="amenities-grid-3">
+                <div class="amenity-card">
+                    <div class="amenity-icon">✈️</div>
+                    <h3>Airport Shuttle</h3>
+                    <p class="amenity-desc">Complimentary transfers for all guests</p>
+                    <p class="amenity-meta">🕐 Available: 24/7</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Luxury Vehicles</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🧳</div>
+                    <h3>Concierge Service</h3>
+                    <p class="amenity-desc">Personal assistant for all your needs</p>
+                    <p class="amenity-meta">🕐 Available: 24/7</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Multi-lingual staff</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">👔</div>
+                    <h3>Laundry Service</h3>
+                    <p class="amenity-desc">Same-day dry cleaning and laundry</p>
+                    <p class="amenity-meta">⏱️ Standard: 4 Hours</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Express: 2 Hours</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🗺️</div>
+                    <h3>Tour & Trekking Desk</h3>
+                    <p class="amenity-desc">Expert guides for Nepal adventures</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Day Tours</span><span class="amenity-tag">Trekking</span><span class="amenity-tag">Cultural Tours</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🔒</div>
+                    <h3>In-Room Safe</h3>
+                    <p class="amenity-desc">Electronic safe in every room</p>
+                    <div class="amenity-tags"><span class="amenity-tag">Laptop Compatible</span><span class="amenity-tag">Standard in All Rooms</span></div>
+                </div>
+                <div class="amenity-card">
+                    <div class="amenity-icon">🚗</div>
+                    <h3>Valet Parking</h3>
+                    <p class="amenity-desc">Secure parking with valet service</p>
+                    <p class="amenity-meta">🕐 Available: 24/7</p>
+                    <div class="amenity-tags"><span class="amenity-tag">50 Vehicles</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CATEGORY 5: In-Room Amenities ========== -->
+    <section class="section-padding reveal">
+        <div class="container">
+            <div class="category-header">
+                <div class="cat-icon">🛏️</div>
+                <h2>In-Room Amenities</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="amenities-grid-4">
+                <div class="amenity-tile"><div class="tile-icon">📶</div><h4>High-Speed WiFi</h4><p>Up to 1Gbps throughout</p></div>
+                <div class="amenity-tile"><div class="tile-icon">📺</div><h4>55" Smart TV</h4><p>Netflix, streaming ready</p></div>
+                <div class="amenity-tile"><div class="tile-icon">❄️</div><h4>Climate Control</h4><p>Individual AC per room</p></div>
+                <div class="amenity-tile"><div class="tile-icon">☕</div><h4>Nespresso Machine</h4><p>Premium coffee & tea</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🛁</div><h4>Luxury Bathroom</h4><p>Rain shower + bathtub</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🌸</div><h4>Premium Toiletries</h4><p>L'Occitane amenities</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🍷</div><h4>Mini Bar</h4><p>Stocked daily</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🛏️</div><h4>Pillow Menu</h4><p>6 pillow options</p></div>
+                <div class="amenity-tile"><div class="tile-icon">📰</div><h4>Daily Newspaper</h4><p>International titles</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🔆</div><h4>Blackout Curtains</h4><p>For perfect sleep</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🔌</div><h4>Universal Adapters</h4><p>All plug types</p></div>
+                <div class="amenity-tile"><div class="tile-icon">🪞</div><h4>Full Length Mirror</h4><p>In every room</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SPECIAL EXPERIENCES ========== -->
+    <section class="section-padding bg-dark reveal">
+        <div class="container">
+            <div style="text-align:center; margin-bottom:40px;">
+                <span class="section-subtitle">Experiences</span>
+                <h2 class="section-title text-white">Signature Experiences</h2>
+                <p style="color:rgba(255,255,255,0.6);">Curated exclusively for Luxum guests</p>
+                <hr class="divider-gold" style="margin:16px auto 0;">
+            </div>
+            <div class="experiences-grid">
+                <div class="experience-card">
+                    <div class="exp-icon">🌄</div>
+                    <h3>Himalayan Sunrise Tour</h3>
+                    <p class="exp-desc">Private guided sunrise trek to Nagarkot viewpoint</p>
+                    <p class="exp-detail">⏱️ Duration: Full Day</p>
+                    <div class="exp-price">From NPR 8,500/person</div>
+                    <p class="exp-includes">Includes: Transport, Guide, Breakfast, Photography</p>
+                    <a href="contact.html" class="btn-secondary" style="color:#c9a84c; border-color:#c9a84c;">Book Experience</a>
+                </div>
+                <div class="experience-card">
+                    <div class="exp-icon">🏛️</div>
+                    <h3>Cultural Kathmandu Tour</h3>
+                    <p class="exp-desc">Expert-guided tour of UNESCO heritage sites</p>
+                    <p class="exp-detail">⏱️ Duration: Half Day</p>
+                    <div class="exp-price">From NPR 4,500/person</div>
+                    <p class="exp-includes">Includes: Transport, Guide, Entry Fees, Refreshments</p>
+                    <a href="contact.html" class="btn-secondary" style="color:#c9a84c; border-color:#c9a84c;">Book Experience</a>
+                </div>
+                <div class="experience-card">
+                    <div class="exp-icon">🍳</div>
+                    <h3>Nepali Cooking Class</h3>
+                    <p class="exp-desc">Learn to cook authentic Nepali dishes with our chef</p>
+                    <p class="exp-detail">⏱️ Duration: 3 Hours</p>
+                    <div class="exp-price">From NPR 3,500/person</div>
+                    <p class="exp-includes">Includes: All Ingredients, Recipe Book, Certificate</p>
+                    <a href="contact.html" class="btn-secondary" style="color:#c9a84c; border-color:#c9a84c;">Book Experience</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CTA ========== -->
+    <section class="amenities-cta">
+        <h2>Experience All Amenities</h2>
+        <p>Book your stay and enjoy world-class facilities</p>
+        <div class="cta-buttons">
+            <a href="booking.html" class="btn-primary" style="background:#0a1628; color:#c9a84c; border-color:#0a1628;">Book Your Stay</a>
+            <a href="contact.html" class="btn-secondary" style="color:#0a1628; border-color:#0a1628;">Contact Us</a>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="luxum-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">LU<span class="gold-x">X</span>UM</div>
+                <p class="footer-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+                <p class="footer-desc">Experience unparalleled luxury in the cultural heart of Nepal. Luxum Hotel blends timeless elegance with warm Nepali hospitality for an unforgettable stay.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook">f</a><a href="#" aria-label="Instagram">◉</a>
+                    <a href="#" aria-label="Twitter">𝕏</a><a href="#" aria-label="TripAdvisor">★</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Quick Links</h4>
+                <div class="footer-links">
+                    <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+                    <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+                    <a href="#gallery">Gallery</a><a href="booking.html">Booking</a><a href="#contact">Contact</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Contact</h4>
+                <div class="footer-contact-item"><span class="contact-icon">📍</span><span>Kamaladi, Kathmandu 44600, Nepal</span></div>
+                <div class="footer-contact-item"><span class="contact-icon">📞</span><a href="tel:+97714234567">+977-1-4234567</a></div>
+                <div class="footer-contact-item"><span class="contact-icon">✉️</span><a href="mailto:info@luxumhotel.com">info@luxumhotel.com</a></div>
+                <div class="footer-contact-item"><span class="contact-icon">🕐</span><span>Check-in: 2PM<br>Check-out: 12PM</span></div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Stay Updated</h4>
+                <p class="newsletter-text">Subscribe for exclusive offers, seasonal packages, and luxury travel inspiration.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+                <p class="newsletter-spam-note">No spam, ever. Unsubscribe anytime.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">Copyright &copy; <span>2026</span> Luxum Hotel. All rights reserved.</div>
+            <div class="footer-bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Admin</a></div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // ========== NAVBAR JS ==========
+        (function() {
+            const navbar = document.getElementById('luxumNavbar');
+            const hamburger = document.getElementById('navHamburger');
+            const mobileMenu = document.getElementById('mobileMenuOverlay');
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+            function updateNavOnScroll() {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > 50) { navbar.classList.add('scrolled'); } else { navbar.classList.remove('scrolled'); }
+                if (!mobileMenu.classList.contains('open')) {
+                    if (currentScrollY > lastScrollY && currentScrollY > 300) { navbar.classList.add('hidden'); }
+                    else { navbar.classList.remove('hidden'); }
+                }
+                lastScrollY = currentScrollY; ticking = false;
+            }
+            window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(updateNavOnScroll); ticking = true; } });
+            function openMenu() { mobileMenu.classList.add('open'); hamburger.classList.add('active'); document.body.style.overflow = 'hidden'; }
+            function closeMenu() { mobileMenu.classList.remove('open'); hamburger.classList.remove('active'); document.body.style.overflow = ''; }
+            hamburger.addEventListener('click', () => { mobileMenu.classList.contains('open') ? closeMenu() : openMenu(); });
+            mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
+        })();
+
+        // ========== INTERSECTION OBSERVER ==========
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+        revealElements.forEach(el => observer.observe(el));
+
+        // ========== COUNTER ANIMATION ==========
+        const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.getAttribute('data-target'), 10);
+                    const duration = 1600;
+                    const stepTime = Math.max(Math.floor(duration / target), 20);
+                    let current = 0;
+                    const increment = target > 50 ? Math.ceil(target / 60) : 1;
+                    function updateCounter() {
+                        current += increment;
+                        if (current >= target) { el.textContent = target + (target === 100 ? '%' : '+'); return; }
+                        el.textContent = current;
+                        requestAnimationFrame(() => setTimeout(updateCounter, stepTime));
+                    }
+                    updateCounter();
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.6 });
+        statNumbers.forEach(el => counterObserver.observe(el));
+    </script>
+</body>
+</html>
