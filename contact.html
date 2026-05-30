@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us — Luxum Hotel</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- ========== NAVBAR CSS ========== -->
+    <style>
+        :root {
+            --nav-height: 80px;
+            --nav-height-scrolled: 68px;
+        }
+        .luxum-navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            height: var(--nav-height); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent; padding: 0;
+        }
+        .luxum-navbar.scrolled {
+            height: var(--nav-height-scrolled);
+            background: rgba(10, 22, 40, 0.85); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        .luxum-navbar.hidden { transform: translateY(-100%); }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px;
+        }
+        @media (min-width: 768px) { .nav-inner { padding: 0 30px; } }
+        @media (min-width: 1024px) { .nav-inner { padding: 0 40px; } }
+        @media (min-width: 1200px) { .nav-inner { padding: 0; } }
+        .nav-logo-wrap { position: relative; z-index: 1001; }
+        .nav-logo {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem;
+            font-weight: 700; letter-spacing: 3px; color: #ffffff;
+            text-decoration: none; transition: color 0.3s ease;
+        }
+        .nav-logo .gold-x { color: #c9a84c; }
+        .nav-tagline {
+            font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 400;
+            letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.7);
+            margin-top: -2px; white-space: nowrap; transition: opacity 0.3s ease;
+        }
+        .scrolled .nav-tagline { opacity: 0.8; }
+        @media (max-width: 767px) { .nav-tagline { display: none; } .nav-logo { font-size: 1.5rem; letter-spacing: 2px; } }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a {
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+            letter-spacing: 0.8px; text-transform: uppercase; color: rgba(255,255,255,0.85);
+            text-decoration: none; position: relative; padding: 4px 0;
+            transition: color 0.3s ease; white-space: nowrap;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 0;
+            height: 1.5px; background-color: #c9a84c;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-links a:hover, .nav-links a.active { color: #c9a84c; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-cta {
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; color: #0a1628 !important;
+            background-color: #c9a84c; padding: 10px 22px !important; border-radius: 4px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 2px solid #c9a84c;
+        }
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover { background-color: #d4b65f !important; color: #0a1628 !important; box-shadow: 0 6px 20px rgba(201,168,76,0.3); transform: translateY(-1px); }
+        @media (max-width: 1023px) { .nav-links { display: none; } }
+        .nav-hamburger {
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; width: 40px; height: 40px; cursor: pointer;
+            z-index: 1001; background: none; border: none; padding: 4px; gap: 6px;
+        }
+        .nav-hamburger span {
+            display: block; width: 26px; height: 2px; background-color: #ffffff;
+            border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .nav-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        @media (min-width: 1024px) { .nav-hamburger { display: none; } }
+        .mobile-menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(10,22,40,0.97); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); z-index: 999;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.45s ease; pointer-events: none;
+        }
+        .mobile-menu-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
+        .mobile-menu-links { display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; }
+        .mobile-menu-links a {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 2rem;
+            font-weight: 600; color: #ffffff; text-decoration: none; letter-spacing: 1px;
+            transition: all 0.35s ease; opacity: 0; transform: translateY(20px);
+        }
+        .mobile-menu-overlay.open .mobile-menu-links a { opacity: 1; transform: translateY(0); }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(1) { transition-delay: 0.08s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(2) { transition-delay: 0.14s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(3) { transition-delay: 0.20s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(4) { transition-delay: 0.26s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(5) { transition-delay: 0.32s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(6) { transition-delay: 0.38s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(7) { transition-delay: 0.44s; }
+        .mobile-menu-links a:hover { color: #c9a84c; }
+        .mobile-menu-cta {
+            margin-top: 8px; font-family: 'Inter', sans-serif !important;
+            font-size: 1rem !important; font-weight: 600 !important;
+            text-transform: uppercase; letter-spacing: 2px !important;
+            color: #0a1628 !important; background-color: #c9a84c;
+            padding: 14px 36px !important; border-radius: 4px;
+        }
+        .mobile-menu-cta:hover { background-color: #d4b65f !important; color: #0a1628 !important; }
+        @media (min-width: 1024px) { .mobile-menu-overlay { display: none; } }
+    </style>
+
+    <!-- ========== FOOTER CSS ========== -->
+    <style>
+        .luxum-footer { background-color: #0a1628; color: rgba(255,255,255,0.8); font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
+        .luxum-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent 0%, #c9a84c 20%, #c9a84c 80%, transparent 100%); opacity: 0.6; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 60px 20px 40px; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; padding: 70px 30px 50px; } }
+        @media (min-width: 1024px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1.2fr 1.3fr; padding: 80px 40px 60px; } }
+        @media (min-width: 1200px) { .footer-grid { padding: 80px 0 60px; } }
+        .footer-brand .footer-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 3px; color: #ffffff; margin-bottom: 6px; display: inline-block; }
+        .footer-brand .footer-logo .gold-x { color: #c9a84c; }
+        .footer-brand .footer-tagline { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: #c9a84c; margin-bottom: 16px; }
+        .footer-brand .footer-desc { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.6); margin-bottom: 20px; max-width: 280px; }
+        .footer-socials { display: flex; gap: 14px; }
+        .footer-socials a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(201,168,76,0.35); color: #c9a84c; transition: all 0.35s ease; font-size: 15px; text-decoration: none; }
+        .footer-socials a:hover { background-color: #c9a84c; color: #0a1628; border-color: #c9a84c; transform: translateY(-3px); box-shadow: 0 6px 18px rgba(201,168,76,0.25); }
+        .footer-heading { font-family: 'Playfair Display', Georgia, serif; font-size: 1.1rem; font-weight: 600; color: #ffffff; margin-bottom: 20px; letter-spacing: 0.5px; position: relative; padding-bottom: 12px; }
+        .footer-heading::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30px; height: 2px; background-color: #c9a84c; border-radius: 1px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-links a { font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; transition: all 0.3s ease; padding-left: 0; position: relative; }
+        .footer-links a::before { content: '›'; position: absolute; left: -14px; opacity: 0; color: #c9a84c; transition: all 0.3s ease; }
+        .footer-links a:hover { color: #c9a84c; padding-left: 10px; }
+        .footer-links a:hover::before { opacity: 1; left: -8px; }
+        .footer-contact-item { display: flex; gap: 12px; margin-bottom: 14px; font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.5; align-items: flex-start; }
+        .footer-contact-item .contact-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+        .footer-contact-item a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact-item a:hover { color: #c9a84c; }
+        .newsletter-text { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; line-height: 1.6; }
+        .newsletter-form { display: flex; flex-direction: column; gap: 10px; }
+        @media (min-width: 400px) { .newsletter-form { flex-direction: row; } }
+        .newsletter-form input { flex: 1; padding: 12px 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; outline: none; transition: all 0.3s ease; min-width: 0; }
+        .newsletter-form input::placeholder { color: rgba(255,255,255,0.35); }
+        .newsletter-form input:focus { border-color: #c9a84c; background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
+        .newsletter-form button { padding: 12px 20px; background-color: #c9a84c; color: #0a1628; border: none; border-radius: 4px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; transition: all 0.35s ease; white-space: nowrap; }
+        .newsletter-form button:hover { background-color: #d4b65f; box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+        .newsletter-spam-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 10px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: 18px 20px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.4); }
+        @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; padding: 18px 30px; } }
+        @media (min-width: 1024px) { .footer-bottom { padding: 18px 40px; } }
+        @media (min-width: 1200px) { .footer-bottom { padding: 18px 0; } }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.3s ease; }
+        .footer-bottom-links a:hover { color: #c9a84c; }
+        .footer-bottom .copyright span { color: #c9a84c; }
+        @media (max-width: 767px) {
+            .footer-grid { text-align: center; } .footer-brand .footer-desc { margin-left: auto; margin-right: auto; }
+            .footer-socials { justify-content: center; } .footer-heading::after { left: 50%; transform: translateX(-50%); }
+            .footer-links a { padding-left: 0; } .footer-links a::before { display: none; }
+            .footer-links a:hover { padding-left: 0; } .footer-contact-item { justify-content: center; }
+            .footer-bottom { text-align: center; }
+        }
+    </style>
+    <!-- ========== PAGE SPECIFIC STYLES ========== -->
+    <style>
+        .contact-hero {
+            height: 45vh; min-height: 320px;
+            background: linear-gradient(135deg, #0a1628 0%, #0f2440 50%, #0a1628 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .contact-hero-content { position: relative; z-index: 1; max-width: 700px; padding: 0 20px; animation: slideUpHero 0.8s ease forwards; }
+        @keyframes slideUpHero { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .breadcrumb { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .breadcrumb a { color: #c9a84c; text-decoration: none; }
+        .hero-label { display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4); color: #c9a84c; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .contact-hero-content h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 2.5rem; color: #fff; margin-bottom: 12px; }
+        .contact-hero-content p { color: rgba(255,255,255,0.65); font-size: 1rem; line-height: 1.6; }
+        @media (min-width: 768px) { .contact-hero-content h1 { font-size: 3.2rem; } }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Info Cards */
+        .info-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (min-width: 768px) { .info-cards-grid { grid-template-columns: repeat(4, 1fr); } }
+        .info-card {
+            background: #fff; border-radius: 12px; padding: 20px 16px; text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05); transition: all 0.35s ease;
+            border: 1px solid transparent;
+        }
+        .info-card:hover { border-color: #c9a84c; transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
+        .info-card .card-icon { font-size: 2rem; margin-bottom: 10px; }
+        .info-card h4 { font-family: 'Playfair Display', Georgia, serif; font-size: 1rem; margin-bottom: 6px; color: #c9a84c; }
+        .info-card p, .info-card a { font-size: 13px; color: #495057; line-height: 1.6; display: block; text-decoration: none; }
+        .info-card a:hover { color: #c9a84c; }
+
+        /* Two Column Layout */
+        .two-col { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 1024px) { .two-col { grid-template-columns: 1fr 380px; } }
+
+        /* Form */
+        .form-card {
+            background: #fff; border-radius: 12px; padding: 32px 24px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+        }
+        .form-card h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; margin-bottom: 4px; }
+        .form-card .form-subtitle { font-size: 13px; color: #6c757d; margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
+        @media (min-width: 600px) { .form-row { grid-template-columns: 1fr 1fr; } }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #495057; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 6px;
+            font-size: 14px; font-family: 'Inter', sans-serif; transition: all 0.3s ease;
+            background: #f8f9fa; color: #1a1a2e; width: 100%;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #c9a84c; box-shadow: 0 0 0 3px rgba(201,168,76,0.08); background: #fff;
+        }
+        .form-error { font-size: 11px; color: #dc3545; min-height: 15px; }
+        .form-error-global { text-align: center; font-size: 13px; color: #dc3545; margin-top: 10px; min-height: 18px; }
+        .char-counter { font-size: 11px; color: #adb5bd; text-align: right; margin-top: 2px; }
+
+        /* Success Message */
+        .success-message { display: none; text-align: center; padding: 40px 20px; }
+        .success-message.visible { display: block; }
+        .success-message .success-icon { font-size: 3rem; margin-bottom: 12px; }
+        .success-message h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; margin-bottom: 8px; }
+        .success-message p { color: #6c757d; font-size: 14px; margin-bottom: 8px; line-height: 1.6; }
+        .success-message .ref { font-weight: 700; color: #c9a84c; font-size: 1.1rem; margin-bottom: 16px; }
+
+        /* Sidebar */
+        .sidebar-card {
+            background: #fff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.06); margin-bottom: 20px;
+        }
+        .sidebar-card h4 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.1rem; margin-bottom: 14px; }
+        .map-placeholder {
+            width: 100%; height: 220px; background: #0a1628; border-radius: 8px;
+            border: 2px solid #c9a84c; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: rgba(255,255,255,0.6);
+            font-size: 13px; gap: 6px;
+        }
+        .map-placeholder .map-icon { font-size: 2.5rem; }
+        .quick-btn {
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+            border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 10px;
+            text-decoration: none; color: #1a1a2e; font-size: 14px; transition: all 0.3s ease;
+        }
+        .quick-btn:hover { border-color: #c9a84c; background: #f8f9fa; }
+        .quick-btn .q-icon { font-size: 1.3rem; }
+        .social-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .social-btn {
+            flex: 1; min-width: 60px; text-align: center; padding: 10px 6px;
+            border: 1px solid #dee2e6; border-radius: 8px; text-decoration: none;
+            font-size: 12px; color: #495057; transition: all 0.3s ease;
+        }
+        .social-btn:hover { border-color: #c9a84c; color: #c9a84c; }
+        .response-badge {
+            display: inline-block; background: #c9a84c; color: #0a1628;
+            padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Departments */
+        .dept-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 600px) { .dept-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .dept-grid { grid-template-columns: repeat(3, 1fr); } }
+        .dept-card {
+            background: #fff; border-radius: 10px; padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: all 0.3s ease;
+            border: 1px solid transparent; text-align: center;
+        }
+        .dept-card:hover { border-color: #c9a84c; }
+        .dept-card .dept-icon { font-size: 2rem; margin-bottom: 8px; }
+        .dept-card h5 { font-family: 'Playfair Display', Georgia, serif; font-size: 1rem; margin-bottom: 4px; }
+        .dept-card p, .dept-card a { font-size: 12px; color: #6c757d; text-decoration: none; }
+        .dept-card a:hover { color: #c9a84c; }
+
+        /* FAQ */
+        .faq-list { max-width: 800px; margin: 0 auto; }
+        .faq-item {
+            background: #fff; border-radius: 10px; margin-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04); overflow: hidden;
+            border: 1px solid #e9ecef; transition: all 0.3s ease;
+        }
+        .faq-item.open { border-color: #c9a84c; }
+        .faq-question {
+            width: 100%; padding: 18px 20px; text-align: left; font-size: 14px;
+            font-weight: 600; color: #1a1a2e; background: none; border: none;
+            cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; font-family: 'Inter', sans-serif; transition: color 0.3s ease;
+        }
+        .faq-question:hover { color: #c9a84c; }
+        .faq-question .faq-arrow { font-size: 1.2rem; transition: transform 0.3s ease; color: #c9a84c; }
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+        .faq-answer {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 20px; font-size: 13px; color: #6c757d; line-height: 1.7;
+        }
+        .faq-item.open .faq-answer { max-height: 300px; padding: 0 20px 18px; }
+
+        /* CTA */
+        .contact-cta {
+            background: linear-gradient(135deg, #c9a84c 0%, #d4b65f 50%, #c9a84c 100%);
+            text-align: center; padding: 60px 20px;
+        }
+        .contact-cta h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 2rem; color: #0a1628; margin-bottom: 10px; }
+        .contact-cta p { color: rgba(10,22,40,0.8); margin-bottom: 24px; }
+        .contact-cta .cta-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+        @media (min-width: 768px) { .contact-cta h2 { font-size: 2.6rem; } }
+    </style>
+</head>
+<body>
+    <!-- ========== NAVBAR ========== -->
+    <nav class="luxum-navbar scrolled" id="luxumNavbar">
+        <div class="nav-inner">
+            <div class="nav-logo-wrap">
+                <a href="index.html" class="nav-logo">LU<span class="gold-x">X</span>UM</a>
+                <p class="nav-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+                <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+                <a href="gallery.html">Gallery</a><a href="contact.html" class="active">Contact</a>
+                <a href="booking.html" class="nav-cta">Book Now</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-links">
+            <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+            <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+            <a href="gallery.html">Gallery</a><a href="contact.html">Contact</a>
+            <a href="booking.html" class="mobile-menu-cta">Book Now</a>
+        </div>
+    </div>
+
+    <!-- ========== HERO ========== -->
+    <section class="contact-hero">
+        <div class="contact-hero-content">
+            <div class="breadcrumb"><a href="index.html">Home</a> › Contact</div>
+            <div class="hero-label">Get In Touch</div>
+            <h1>Contact Us</h1>
+            <p>We're here to make your stay perfect. Reach out to us anytime.</p>
+            <hr style="width:60px; height:3px; background:#c9a84c; border:none; margin:20px auto; border-radius:2px;">
+        </div>
+    </section>
+
+    <!-- ========== INFO CARDS ========== -->
+    <section class="section-padding reveal">
+        <div class="container">
+            <div class="info-cards-grid">
+                <div class="info-card">
+                    <div class="card-icon">📍</div>
+                    <h4>Address</h4>
+                    <p>Luxum Hotel<br>Kamaladi, Kathmandu 44600<br>Bagmati Province, Nepal</p>
+                    <a href="https://maps.google.com/?q=Kamaladi+Kathmandu+Nepal" target="_blank" class="btn-secondary" style="margin-top:10px; font-size:11px; padding:8px 16px;">View on Map</a>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">📞</div>
+                    <h4>Phone</h4>
+                    <p>Reservations: <a href="tel:+97714234567">+977-1-4234567</a></p>
+                    <p>Front Desk: <a href="tel:+97714234568">+977-1-4234568</a></p>
+                    <p>WhatsApp: <a href="https://wa.me/9779807812524">+977-9807812524</a></p>
+                    <p style="font-size:11px; color:#6c757d;">Available: 24/7</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">✉️</div>
+                    <h4>Email</h4>
+                    <p>Reservations:<br><a href="mailto:reservations@luxumhotel.com">reservations@luxumhotel.com</a></p>
+                    <p>General:<br><a href="mailto:info@luxumhotel.com">info@luxumhotel.com</a></p>
+                    <p>Restaurant:<br><a href="mailto:restaurant@luxumhotel.com">restaurant@luxumhotel.com</a></p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">🕐</div>
+                    <h4>Hours</h4>
+                    <p>Check-in: 2:00 PM</p>
+                    <p>Check-out: 12:00 PM</p>
+                    <p>Front Desk: 24/7</p>
+                    <p>Concierge: 24/7</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FORM + SIDEBAR ========== -->
+    <section class="section-padding bg-light reveal">
+        <div class="container">
+            <div class="two-col">
+                <!-- LEFT: Form -->
+                <div>
+                    <div class="form-card" id="formCard">
+                        <h3>Send Us a Message</h3>
+                        <p class="form-subtitle">We'll respond within 2 hours</p>
+                        <form id="contactForm" novalidate>
+                            <div class="form-row">
+                                <div class="form-group"><label for="name">Full Name *</label><input type="text" id="name" placeholder="Your full name" required><span class="form-error" id="name_error"></span></div>
+                                <div class="form-group"><label for="email">Email Address *</label><input type="email" id="email" placeholder="your@email.com" required><span class="form-error" id="email_error"></span></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" placeholder="+977-98XXXXXXXX"><span class="form-error" id="phone_error"></span></div>
+                                <div class="form-group"><label for="subject">Subject *</label>
+                                    <select id="subject" required>
+                                        <option value="">Select subject</option>
+                                        <option>General Inquiry</option><option>Room Reservation</option>
+                                        <option>Restaurant Reservation</option><option>Event & Banquet Inquiry</option>
+                                        <option>Airport Transfer Request</option><option>Spa & Wellness Booking</option>
+                                        <option>Feedback & Complaints</option><option>Partnership & Business</option>
+                                        <option>Media & Press</option><option>Other</option>
+                                    </select>
+                                    <span class="form-error" id="subject_error"></span>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom:4px;">
+                                <label for="message">Message * (min 20 characters)</label>
+                                <textarea id="message" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                                <div class="char-counter" id="charCount">0 / 500</div>
+                                <span class="form-error" id="message_error"></span>
+                            </div>
+                            <button type="submit" class="btn-primary" id="submitBtn" style="width:100%; padding:14px; font-size:14px;">Send Message</button>
+                            <div class="form-error-global" id="form_global_error"></div>
+                        </form>
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">✅</div>
+                            <h3>Message Sent!</h3>
+                            <p>Thank you for contacting Luxum Hotel. Our team will respond to your inquiry within 2 hours.</p>
+                            <p class="ref" id="msgRef">Reference: MSG-000000</p>
+                            <button class="btn-secondary" id="sendAnotherBtn">Send Another Message</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Sidebar -->
+                <div>
+                    <div class="sidebar-card">
+                        <h4>Our Location</h4>
+                        <div class="map-placeholder">
+                            <span class="map-icon">📍</span>
+                            <strong style="color:#c9a84c;">Luxum Hotel</strong>
+                            <span>Kamaladi, Kathmandu</span>
+                            <a href="https://maps.google.com/?q=Kamaladi+Kathmandu+Nepal" target="_blank" class="btn-secondary" style="margin-top:8px; font-size:11px; padding:6px 14px;">Open in Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="sidebar-card">
+                        <h4>Quick Contact</h4>
+                        <a href="tel:+97714234567" class="quick-btn"><span class="q-icon">📞</span> Call Now</a>
+                        <a href="https://wa.me/9779807812524" target="_blank" class="quick-btn"><span class="q-icon">💬</span> WhatsApp</a>
+                        <a href="mailto:info@luxumhotel.com" class="quick-btn"><span class="q-icon">✉️</span> Email Us</a>
+                    </div>
+                    <div class="sidebar-card">
+                        <h4>Follow Us</h4>
+                        <div class="social-row">
+                            <a href="#" class="social-btn">f<br>Facebook</a>
+                            <a href="#" class="social-btn">◉<br>Instagram</a>
+                            <a href="#" class="social-btn">𝕏<br>Twitter</a>
+                            <a href="#" class="social-btn">★<br>TripAdvisor</a>
+                        </div>
+                        <div style="text-align:center; margin-top:14px;">
+                            <span class="response-badge">⚡ Average Response Time: Under 2 Hours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DEPARTMENTS ========== -->
+    <section class="section-padding reveal">
+        <div class="container">
+            <div style="text-align:center; margin-bottom:40px;">
+                <span class="section-subtitle">Departments</span>
+                <h2 class="section-title">Our Departments</h2>
+                <hr class="divider-gold" style="margin:16px auto 0;">
+            </div>
+            <div class="dept-grid">
+                <div class="dept-card"><div class="dept-icon">🛎️</div><h5>Reservations</h5><a href="mailto:reservations@luxumhotel.com">reservations@luxumhotel.com</a><p>+977-1-4234567</p><p style="font-size:11px;">Available: 24/7</p></div>
+                <div class="dept-card"><div class="dept-icon">🍽️</div><h5>Restaurant Luxum</h5><a href="mailto:restaurant@luxumhotel.com">restaurant@luxumhotel.com</a><p>+977-1-4234568</p><p style="font-size:11px;">Hours: 7AM - 11PM</p></div>
+                <div class="dept-card"><div class="dept-icon">💆</div><h5>Spa & Wellness</h5><a href="mailto:spa@luxumhotel.com">spa@luxumhotel.com</a><p>+977-1-4234569</p><p style="font-size:11px;">Hours: 9AM - 9PM</p></div>
+                <div class="dept-card"><div class="dept-icon">🎉</div><h5>Events & Banquets</h5><a href="mailto:events@luxumhotel.com">events@luxumhotel.com</a><p>+977-1-4234570</p><p style="font-size:11px;">Hours: 9AM - 6PM</p></div>
+                <div class="dept-card"><div class="dept-icon">✈️</div><h5>Airport Transfer</h5><a href="mailto:transfers@luxumhotel.com">transfers@luxumhotel.com</a><p>+977-1-4234571</p><p style="font-size:11px;">Available: 24/7</p></div>
+                <div class="dept-card"><div class="dept-icon">💼</div><h5>Corporate & Groups</h5><a href="mailto:corporate@luxumhotel.com">corporate@luxumhotel.com</a><p>+977-1-4234572</p><p style="font-size:11px;">Hours: 9AM - 6PM</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FAQ ========== -->
+    <section class="section-padding bg-light reveal">
+        <div class="container">
+            <div style="text-align:center; margin-bottom:40px;">
+                <span class="section-subtitle">FAQ</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <hr class="divider-gold" style="margin:16px auto 0;">
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question">What are your check-in and check-out times? <span class="faq-arrow">▾</span></button>
+                    <div class="faq-answer">Check-in is at 2:00 PM and check-out is at 12:00 PM noon. Early check-in and late check-out are available upon request, subject to availability. Presidential and Executive Suite guests enjoy flexible timing.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Do you offer airport transfers? <span class="faq-arrow">▾</span></button>
+                    <div class="faq-answer">Yes, we offer complimentary airport transfers for all guests. Simply provide your flight details during booking or contact our concierge team at least 24 hours before arrival.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">What is your cancellation policy? <span class="faq-arrow">▾</span></button>
+                    <div class="faq-answer">Reservations can be cancelled free of charge up to 24 hours before check-in. Cancellations within 24 hours may incur a one-night charge. Presidential and Executive Suites require 48-hour notice.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Is breakfast included? <span class="faq-arrow">▾</span></button>
+                    <div class="faq-answer">Breakfast is included in our Premium and Suite packages. Standard and Deluxe rooms can add breakfast for NPR 1,500 per person. Our restaurant serves international buffet breakfast from 7:00 AM to 10:30 AM.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Do you have parking facilities? <span class="faq-arrow">▾</span></button>
+                    <div class="faq-answer">Yes, we offer complimentary valet parking for all hotel guests. Our secure parking facility accommodates 50 vehicles with 24/7 valet service.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CTA ========== -->
+    <section class="contact-cta">
+        <h2>Ready to Experience Luxum?</h2>
+        <p>Book your stay today and discover the finest luxury hotel in Kathmandu</p>
+        <div class="cta-btns">
+            <a href="booking.html" class="btn-primary" style="background:#0a1628; color:#c9a84c; border-color:#0a1628;">Book Now</a>
+            <a href="rooms.html" class="btn-secondary" style="color:#0a1628; border-color:#0a1628;">View Rooms</a>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="luxum-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">LU<span class="gold-x">X</span>UM</div>
+                <p class="footer-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+                <p class="footer-desc">Experience unparalleled luxury in the cultural heart of Nepal. Luxum Hotel blends timeless elegance with warm Nepali hospitality for an unforgettable stay.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook">f</a><a href="#" aria-label="Instagram">◉</a>
+                    <a href="#" aria-label="Twitter">𝕏</a><a href="#" aria-label="TripAdvisor">★</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Quick Links</h4>
+                <div class="footer-links">
+                    <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+                    <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+                    <a href="gallery.html">Gallery</a><a href="booking.html">Booking</a><a href="contact.html">Contact</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Contact</h4>
+                <div class="footer-contact-item"><span class="contact-icon">📍</span><span>Kamaladi, Kathmandu 44600, Nepal</span></div>
+                <div class="footer-contact-item"><span class="contact-icon">📞</span><a href="tel:+97714234567">+977-1-4234567</a></div>
+                <div class="footer-contact-item"><span class="contact-icon">✉️</span><a href="mailto:info@luxumhotel.com">info@luxumhotel.com</a></div>
+                <div class="footer-contact-item"><span class="contact-icon">🕐</span><span>Check-in: 2PM<br>Check-out: 12PM</span></div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Stay Updated</h4>
+                <p class="newsletter-text">Subscribe for exclusive offers, seasonal packages, and luxury travel inspiration.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+                <p class="newsletter-spam-note">No spam, ever. Unsubscribe anytime.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">Copyright &copy; <span>2026</span> Luxum Hotel. All rights reserved.</div>
+            <div class="footer-bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Admin</a></div>
+        </div>
+    </footer>
+    <!-- ========== SCRIPTS ========== -->
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // ========== NAVBAR JS ==========
+        (function() {
+            const navbar = document.getElementById('luxumNavbar');
+            const hamburger = document.getElementById('navHamburger');
+            const mobileMenu = document.getElementById('mobileMenuOverlay');
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            let lastScrollY = window.scrollY, ticking = false;
+            function updateNavOnScroll() {
+                const s = window.scrollY;
+                if (s > 50) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
+                if (!mobileMenu.classList.contains('open')) {
+                    if (s > lastScrollY && s > 300) navbar.classList.add('hidden'); else navbar.classList.remove('hidden');
+                }
+                lastScrollY = s; ticking = false;
+            }
+            window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(updateNavOnScroll); ticking = true; } });
+            function openMenu() { mobileMenu.classList.add('open'); hamburger.classList.add('active'); document.body.style.overflow = 'hidden'; }
+            function closeMenu() { mobileMenu.classList.remove('open'); hamburger.classList.remove('active'); document.body.style.overflow = ''; }
+            hamburger.addEventListener('click', () => { mobileMenu.classList.contains('open') ? closeMenu() : openMenu(); });
+            mobileLinks.forEach(l => l.addEventListener('click', closeMenu));
+        })();
+
+        // ========== INTERSECTION OBSERVER ==========
+        const revealEls = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+        revealEls.forEach(el => observer.observe(el));
+
+        // ========== CHARACTER COUNTER ==========
+        const msgTextarea = document.getElementById('message');
+        const charCount = document.getElementById('charCount');
+        msgTextarea.addEventListener('input', () => {
+            let count = msgTextarea.value.length;
+            if (count > 500) { msgTextarea.value = msgTextarea.value.substring(0, 500); count = 500; }
+            charCount.textContent = count + ' / 500';
+        });
+
+        // ========== FAQ ACCORDION ==========
+        document.querySelectorAll('.faq-question').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.parentElement;
+                const isOpen = item.classList.contains('open');
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+
+        // ========== FORM VALIDATION & SUBMISSION ==========
+        const contactForm = document.getElementById('contactForm');
+        const formCard = document.getElementById('formCard');
+        const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const sendAnotherBtn = document.getElementById('sendAnotherBtn');
+
+        function clearErrors() {
+            document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+            document.getElementById('form_global_error').textContent = '';
+        }
+
+        function showError(id, msg) { document.getElementById(id + '_error').textContent = msg; }
+
+        function validateForm() {
+            clearErrors();
+            let valid = true;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value.trim();
+            if (!name || name.length < 2) { showError('name', 'Name is required (min 2 characters).'); valid = false; }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('email', 'Valid email is required.'); valid = false; }
+            if (!subject) { showError('subject', 'Please select a subject.'); valid = false; }
+            if (!message || message.length < 20) { showError('message', 'Message must be at least 20 characters.'); valid = false; }
+            return valid;
+        }
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateForm()) return;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim() || null,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value.trim()
+            };
+
+            try {
+                if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined' || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                    throw new Error('Supabase configuration not loaded.');
+                }
+                const response = await fetch(SUPABASE_URL + '/rest/v1/contacts', {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                if (!response.ok) {
+                    const errText = await response.text();
+                    console.error('Supabase error:', errText);
+                    throw new Error('Failed to send message. Status: ' + response.status);
+                }
+
+                // Success
+                const refNum = 'MSG-' + Date.now().toString(36).toUpperCase().slice(-6);
+                document.getElementById('msgRef').textContent = 'Reference: ' + refNum;
+                contactForm.style.display = 'none';
+                successMessage.classList.add('visible');
+                window.scrollTo({ top: formCard.offsetTop - 100, behavior: 'smooth' });
+            } catch (error) {
+                console.error('Contact error:', error);
+                document.getElementById('form_global_error').textContent = 'Unable to send message. Please try again or call +977-1-4234567.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            }
+        });
+
+        sendAnotherBtn.addEventListener('click', () => {
+            contactForm.reset();
+            contactForm.style.display = 'block';
+            successMessage.classList.remove('visible');
+            charCount.textContent = '0 / 500';
+            clearErrors();
+            window.scrollTo({ top: formCard.offsetTop - 100, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
