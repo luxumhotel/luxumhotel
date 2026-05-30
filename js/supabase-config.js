@@ -1,2 +1,2 @@
-const SUPABASE_URL = 'https://fpluaoilpdfstgsefxyv.supabase.co/rest/v1/'
+const SUPABASE_URL = 'https://fpluaoilpdfstgsefxyv.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwbHVhb2lscGRmc3Rnc2VmeHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NjAyMTAsImV4cCI6MjA5NTQzNjIxMH0.tYiAMY6E7EkjTnqQ6O1pefBKWJHXvYjw-JWnK2jL4EU'
