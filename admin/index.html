@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Luxum Hotel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f4f6f9; color: #1a1a2e; min-height: 100vh; }
+        body.no-scroll { overflow: hidden; }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            position: fixed; inset: 0; background: linear-gradient(135deg, #0a1628 0%, #0f2440 50%, #0a1628 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .login-screen.hidden { display: none; }
+        .login-card {
+            background: #fff; border-radius: 16px; padding: 40px 30px; width: 400px; max-width: 90%;
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .login-card .login-logo {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 2.2rem;
+            font-weight: 700; letter-spacing: 3px; color: #0a1628; margin-bottom: 4px;
+        }
+        .login-card .login-logo span { color: #c9a84c; }
+        .login-card .login-subtitle { font-size: 13px; color: #6c757d; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+        .login-card .login-divider { width: 50px; height: 3px; background: #c9a84c; margin: 0 auto 20px; border-radius: 2px; }
+        .login-card input {
+            width: 100%; padding: 12px 16px; border: 1px solid #dee2e6; border-radius: 8px;
+            font-size: 14px; margin-bottom: 16px; text-align: center; letter-spacing: 4px;
+            transition: border-color 0.3s;
+        }
+        .login-card input:focus { outline: none; border-color: #c9a84c; }
+        .login-error { color: #dc3545; font-size: 12px; margin-bottom: 10px; min-height: 16px; }
+
+        /* DASHBOARD */
+        .dashboard-container { display: none; }
+        .dashboard-container.visible { display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width); background: #0a1628; color: #fff;
+            display: flex; flex-direction: column; position: fixed; top: 0; left: 0;
+            height: 100vh; z-index: 100; transition: transform 0.35s ease; overflow-y: auto;
+        }
+        .sidebar-header { padding: 24px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-header .s-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; color: #fff; }
+        .sidebar-header .s-logo span { color: #c9a84c; }
+        .sidebar-header .s-subtitle { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 16px 0; }
+        .sidebar-nav .nav-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+            color: rgba(255,255,255,0.65); text-decoration: none; font-size: 13px;
+            font-weight: 500; transition: all 0.3s ease; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
+        }
+        .sidebar-nav .nav-link:hover { color: #fff; background: rgba(201,168,76,0.08); }
+        .sidebar-nav .nav-link.active { color: #0a1628; background: #c9a84c; font-weight: 600; }
+        .sidebar-nav .nav-link .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-footer .admin-user { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .sidebar-footer .admin-avatar { width: 36px; height: 36px; border-radius: 50%; background: #c9a84c; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #0a1628; }
+        .sidebar-footer .admin-name { font-size: 13px; font-weight: 600; }
+        .sidebar-footer .admin-role { font-size: 10px; color: rgba(255,255,255,0.5); }
+        .logout-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
+        .logout-btn:hover { background: rgba(220,53,69,0.2); border-color: #dc3545; color: #dc3545; }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; }
+        .topbar {
+            height: var(--topbar-height); background: #fff; border-bottom: 1px solid #e9ecef;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; position: sticky; top: 0; z-index: 50;
+        }
+        .topbar .page-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.3rem; font-weight: 600; }
+        .topbar .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 13px; color: #6c757d; }
+        .topbar .notif-icon { font-size: 1.2rem; cursor: pointer; }
+        .topbar .top-avatar { width: 34px; height: 34px; border-radius: 50%; background: #c9a84c; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #0a1628; font-size: 13px; }
+        .content-area { padding: 24px; }
+        .admin-page { display: none; }
+        .admin-page.active { display: block; }
+
+        /* Mobile hamburger */
+        .mobile-toggle {
+            display: none; background: none; border: none; font-size: 1.5rem;
+            cursor: pointer; color: #1a1a2e; margin-right: 12px;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: inline-block; }
+            .sidebar-overlay {
+                position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99;
+                display: none;
+            }
+            .sidebar-overlay.open { display: block; }
+        }
+
+        /* CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-card {
+            background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            display: flex; align-items: center; gap: 14px;
+        }
+        .stat-card .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .stat-card .stat-info .stat-value { font-size: 1.6rem; font-weight: 700; }
+        .stat-card .stat-info .stat-label { font-size: 11px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* TABLES */
+        .table-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 20px; overflow-x: auto; }
+        .table-card h4 { font-family: 'Playfair Display', Georgia, serif; margin-bottom: 14px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e9ecef; white-space: nowrap; }
+        th { font-weight: 600; color: #495057; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover { background: #f8f9fa; }
+        .badge {
+            display: inline-block; padding: 4px 10px; border-radius: 50px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+        }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-confirmed { background: #d4edda; color: #155724; }
+        .badge-cancelled { background: #f8d7da; color: #721c24; }
+        .badge-gold { background: #c9a84c; color: #0a1628; }
+        .btn-sm {
+            padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: 600;
+            cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-block;
+        }
+        .btn-confirm { background: #1a3a2a; color: #fff; }
+        .btn-confirm:hover { background: #2a5a3a; }
+        .btn-cancel { background: #dc3545; color: #fff; }
+        .btn-cancel:hover { background: #c82333; }
+        .btn-view { background: #f8f9fa; color: #1a1a2e; border: 1px solid #dee2e6; }
+        .btn-view:hover { border-color: #c9a84c; color: #c9a84c; }
+        .search-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+        .search-row input, .search-row select { padding: 8px 12px; border: 1px solid #dee2e6; border-radius: 6px; font-size: 13px; }
+        .search-row input:focus, .search-row select:focus { outline: none; border-color: #c9a84c; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(10,22,40,0.8); z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #fff; border-radius: 12px; padding: 28px; max-width: 500px;
+            width: 90%; max-height: 80vh; overflow-y: auto; transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal-content { transform: translateY(0); }
+        .modal-close { float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+
+        .loading-text { text-align: center; padding: 30px; color: #6c757d; }
+        .settings-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .settings-grid { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+
+    <!-- ========== LOGIN SCREEN ========== -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo">LU<span>X</span>UM</div>
+            <p class="login-subtitle">Admin Dashboard</p>
+            <div class="login-divider"></div>
+            <input type="password" id="adminPassword" placeholder="Enter Password" autocomplete="off">
+            <p class="login-error" id="loginError"></p>
+            <button class="btn-primary" id="loginBtn" style="width:100%;">Sign In</button>
+        </div>
+    </div>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Sidebar Overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="s-logo">LU<span>X</span>UM</div>
+                <p class="s-subtitle">Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')"><span class="nav-icon">📊</span> Dashboard</button>
+                <button class="nav-link" data-page="bookings" onclick="showPage('bookings')"><span class="nav-icon">🛏️</span> Bookings</button>
+                <button class="nav-link" data-page="restaurant" onclick="showPage('restaurant')"><span class="nav-icon">🍽️</span> Restaurant</button>
+                <button class="nav-link" data-page="messages" onclick="showPage('messages')"><span class="nav-icon">💬</span> Messages</button>
+                <button class="nav-link" data-page="rooms" onclick="showPage('rooms')"><span class="nav-icon">🏨</span> Rooms</button>
+                <button class="nav-link" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙️</span> Settings</button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user">
+                    <div class="admin-avatar">A</div>
+                    <div><div class="admin-name">Admin User</div><div class="admin-role">Hotel Manager</div></div>
+                </div>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="topbar">
+                <div style="display:flex;align-items:center;">
+                    <button class="mobile-toggle" id="mobileToggle">☰</button>
+                    <span class="page-title" id="pageTitle">Dashboard</span>
+                </div>
+                <div class="topbar-right">
+                    <span id="todayDate"></span>
+                    <span class="notif-icon">🔔</span>
+                    <div class="top-avatar">A</div>
+                </div>
+            </div>
+            <div class="content-area">
+
+                <!-- PAGE: Dashboard Overview -->
+                <div class="admin-page active" id="page-dashboard">
+                    <div class="stats-grid" id="dashboardStats"></div>
+                    <div class="table-card"><h4>Recent Bookings</h4><div id="recentBookingsTable"></div><button class="btn-sm btn-view" onclick="showPage('bookings')" style="margin-top:10px;">View All →</button></div>
+                    <div class="table-card"><h4>Recent Restaurant Reservations</h4><div id="recentRestaurantTable"></div></div>
+                    <div class="table-card"><h4>Recent Messages</h4><div id="recentMessagesTable"></div></div>
+                </div>
+
+                <!-- PAGE: Bookings -->
+                <div class="admin-page" id="page-bookings">
+                    <div class="stats-grid" id="bookingStats"></div>
+                    <div class="table-card">
+                        <div class="search-row">
+                            <input type="text" id="bookingSearch" placeholder="Search by name or booking #..." oninput="renderBookings()">
+                            <select id="bookingStatusFilter" onchange="renderBookings()"><option value="all">All Status</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select>
+                            <button class="btn-sm btn-view" onclick="exportCSV(bookingsData, 'bookings')">📥 Export CSV</button>
+                        </div>
+                        <div id="bookingsTable"></div>
+                    </div>
+                </div>
+
+                <!-- PAGE: Restaurant -->
+                <div class="admin-page" id="page-restaurant">
+                    <div class="stats-grid" id="restaurantStats"></div>
+                    <div class="table-card"><div id="restaurantTable"></div></div>
+                </div>
+
+                <!-- PAGE: Messages -->
+                <div class="admin-page" id="page-messages">
+                    <div class="table-card"><div id="messagesTable"></div></div>
+                </div>
+
+                <!-- PAGE: Rooms -->
+                <div class="admin-page" id="page-rooms">
+                    <div class="table-card"><h4>Room Management</h4><div id="roomsTable"></div></div>
+                </div>
+
+                <!-- PAGE: Settings -->
+                <div class="admin-page" id="page-settings">
+                    <div class="settings-grid">
+                        <div class="table-card"><h4>Hotel Information</h4><p style="font-size:13px;color:#6c757d;line-height:2;"><strong>Hotel Name:</strong> Luxum Hotel<br><strong>Address:</strong> Kamaladi, Kathmandu 44600, Nepal<br><strong>Phone:</strong> +977-1-4234567<br><strong>Email:</strong> info@luxumhotel.com</p></div>
+                        <div class="table-card"><h4>Change Password</h4><input type="password" id="newPassword" placeholder="New password" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #dee2e6;border-radius:6px;"><button class="btn-sm btn-confirm" onclick="changePassword()">Update Password</button><p id="pwMsg" style="font-size:11px;color:#28a745;margin-top:6px;"></p></div>
+                        <div class="table-card"><h4>System Info</h4><p style="font-size:13px;color:#6c757d;line-height:2;"><strong>Database:</strong> Supabase PostgreSQL<br><strong>Frontend:</strong> HTML/CSS/JS<br><strong>Hosting:</strong> Netlify<br><strong>Last Updated:</strong> <span id="sysLastUpdated"></span></p></div>
+                        <div class="table-card"><h4>Quick Links</h4><a href="../index.html" target="_blank" class="btn-sm btn-view" style="display:block;margin:6px 0;">🏨 View Live Website</a><a href="../booking.html" target="_blank" class="btn-sm btn-view" style="display:block;margin:6px 0;">🛏️ Bookings Page</a><a href="../restaurant.html" target="_blank" class="btn-sm btn-view" style="display:block;margin:6px 0;">🍽️ Restaurant Page</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== DETAIL MODAL ========== -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script src="../js/supabase-config.js"></script>
+    <script>
+        // ========== GLOBAL STATE ==========
+        let currentPage = 'dashboard';
+        let bookingsData = [];
+        let restaurantData = [];
+        let contactsData = [];
+        let roomsData = [];
+
+        // ========== AUTH ==========
+        const ADMIN_PASSWORD = 'luxum2026';
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+
+        function checkAuth() {
+            if (sessionStorage.getItem('luxumAdmin') === 'authenticated') {
+                loginScreen.classList.add('hidden');
+                dashboardContainer.classList.add('visible');
+                initDashboard();
+            }
+        }
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const pw = document.getElementById('adminPassword').value;
+            if (pw === ADMIN_PASSWORD) {
+                sessionStorage.setItem('luxumAdmin', 'authenticated');
+                loginScreen.classList.add('hidden');
+                dashboardContainer.classList.add('visible');
+                initDashboard();
+            } else {
+                document.getElementById('loginError').textContent = 'Incorrect password. Try again.';
+            }
+        });
+        document.getElementById('adminPassword').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+
+        function logout() {
+            sessionStorage.removeItem('luxumAdmin');
+            loginScreen.classList.remove('hidden');
+            dashboardContainer.classList.remove('visible');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').textContent = '';
+        }
+
+        // ========== MOBILE SIDEBAR ==========
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        document.getElementById('mobileToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('open');
+            document.body.classList.toggle('no-scroll');
+        });
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+            document.body.classList.remove('no-scroll');
+        });
+        // ========== PAGE NAVIGATION ==========
+        function showPage(pageName) {
+            currentPage = pageName;
+            document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageName).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+            document.getElementById('pageTitle').textContent = pageName.charAt(0).toUpperCase() + pageName.slice(1);
+            // Close mobile sidebar
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+            document.body.classList.remove('no-scroll');
+            loadPageData(pageName);
+        }
+
+        // ========== DATA LOADING ==========
+        async function loadAllData() {
+            try {
+                if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
+                    console.warn('Supabase not configured. Using empty data.');
+                    return;
+                }
+                const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY };
+
+                const [bRes, rRes, cRes] = await Promise.all([
+                    fetch(SUPABASE_URL + '/rest/v1/bookings?select=*&order=created_at.desc', { headers }),
+                    fetch(SUPABASE_URL + '/rest/v1/restaurant_reservations?select=*&order=created_at.desc', { headers }),
+                    fetch(SUPABASE_URL + '/rest/v1/contacts?select=*&order=created_at.desc', { headers })
+                ]);
+                bookingsData = bRes.ok ? await bRes.json() : [];
+                restaurantData = rRes.ok ? await rRes.json() : [];
+                contactsData = cRes.ok ? await cRes.json() : [];
+
+                // Rooms — use static data if table doesn't exist
+                try {
+                    const roomRes = await fetch(SUPABASE_URL + '/rest/v1/rooms?select=*', { headers });
+                    roomsData = roomRes.ok ? await roomRes.json() : [];
+                } catch { roomsData = []; }
+                if (roomsData.length === 0) {
+                    roomsData = [
+                        { id: 1, name: 'Standard Room', price_per_night: 8000, max_guests: 2, is_available: true },
+                        { id: 2, name: 'Deluxe Room', price_per_night: 12000, max_guests: 2, is_available: true },
+                        { id: 3, name: 'Superior Room', price_per_night: 18000, max_guests: 3, is_available: true },
+                        { id: 4, name: 'Junior Suite', price_per_night: 28000, max_guests: 3, is_available: true },
+                        { id: 5, name: 'Executive Suite', price_per_night: 45000, max_guests: 4, is_available: true },
+                        { id: 6, name: 'Presidential Suite', price_per_night: 85000, max_guests: 6, is_available: true }
+                    ];
+                }
+            } catch (err) { console.error('Data load error:', err); }
+        }
+
+        function loadPageData(page) {
+            if (page === 'dashboard') renderDashboard();
+            else if (page === 'bookings') renderBookings();
+            else if (page === 'restaurant') renderRestaurant();
+            else if (page === 'messages') renderMessages();
+            else if (page === 'rooms') renderRooms();
+            else if (page === 'settings') renderSettings();
+        }
+
+        // ========== DASHBOARD ==========
+        function renderDashboard() {
+            const totalBookings = bookingsData.length;
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+            const monthRevenue = bookingsData.filter(b => b.created_at >= monthStart).reduce((s, b) => s + (b.total_price || 0), 0);
+            const totalRestaurant = restaurantData.length;
+            const totalMessages = contactsData.length;
+
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="stat-card"><div class="stat-icon" style="background:#e8f0fe;color:#0a1628;">🛏️</div><div class="stat-info"><div class="stat-value">${totalBookings}</div><div class="stat-label">Total Bookings</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#fef3e0;color:#c9a84c;">💰</div><div class="stat-info"><div class="stat-value">NPR ${monthRevenue.toLocaleString()}</div><div class="stat-label">Revenue This Month</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#e6f4ea;color:#1a3a2a;">🍽️</div><div class="stat-info"><div class="stat-value">${totalRestaurant}</div><div class="stat-label">Restaurant Reservations</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#e8eaf6;color:#3f51b5;">💬</div><div class="stat-info"><div class="stat-value">${totalMessages}</div><div class="stat-label">New Messages</div></div></div>
+            `;
+
+            document.getElementById('recentBookingsTable').innerHTML = buildBookingsTable(bookingsData.slice(0, 5));
+            document.getElementById('recentRestaurantTable').innerHTML = buildRestaurantTable(restaurantData.slice(0, 5));
+            document.getElementById('recentMessagesTable').innerHTML = contactsData.slice(0, 3).map(c => `
+                <div style="padding:10px;border-bottom:1px solid #e9ecef;">
+                    <strong>${c.name}</strong> — <span style="color:#6c757d;">${c.subject || 'No subject'}</span>
+                    <p style="font-size:12px;color:#adb5bd;margin:2px 0;">${(c.message || '').substring(0, 80)}...</p>
+                    <span style="font-size:10px;color:#6c757d;">${timeAgo(c.created_at)}</span>
+                </div>
+            `).join('') || '<p class="loading-text">No messages yet</p>';
+        }
+
+        // ========== BOOKINGS ==========
+        function buildBookingsTable(data) {
+            if (data.length === 0) return '<p class="loading-text">No bookings found</p>';
+            return `<table><thead><tr><th>Booking #</th><th>Guest</th><th>Email</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>${data.map(b => `
+                <tr>
+                    <td>${b.booking_number || '—'}</td><td>${b.guest_name || '—'}</td><td>${b.email || '—'}</td>
+                    <td>${b.room_type || '—'}</td><td>${b.check_in || '—'}</td><td>${b.check_out || '—'}</td>
+                    <td>${b.total_nights || 0}</td><td>NPR ${(b.total_price || 0).toLocaleString()}</td>
+                    <td><span class="badge badge-${b.status || 'pending'}">${b.status || 'pending'}</span></td>
+                    <td>
+                        ${b.status === 'pending' ? `<button class="btn-sm btn-confirm" onclick="updateBookingStatus(${b.id},'confirmed')">✅</button>` : ''}
+                        ${b.status !== 'cancelled' ? `<button class="btn-sm btn-cancel" onclick="updateBookingStatus(${b.id},'cancelled')">❌</button>` : ''}
+                        <button class="btn-sm btn-view" onclick="viewBookingDetail(${b.id})">👁️</button>
+                    </td>
+                </tr>`).join('')}</tbody></table>`;
+        }
+
+        function renderBookings() {
+            const filtered = filterBookings();
+            const pending = bookingsData.filter(b => b.status === 'pending').length;
+            const confirmed = bookingsData.filter(b => b.status === 'confirmed').length;
+            const cancelled = bookingsData.filter(b => b.status === 'cancelled').length;
+            const totalRev = bookingsData.reduce((s, b) => s + (b.total_price || 0), 0);
+            document.getElementById('bookingStats').innerHTML = `
+                <div class="stat-card"><div class="stat-icon" style="background:#e8f0fe;">📋</div><div class="stat-info"><div class="stat-value">${bookingsData.length}</div><div class="stat-label">Total</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#fff3cd;">⏳</div><div class="stat-info"><div class="stat-value">${pending}</div><div class="stat-label">Pending</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#d4edda;">✅</div><div class="stat-info"><div class="stat-value">${confirmed}</div><div class="stat-label">Confirmed</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#e8eaf6;">💰</div><div class="stat-info"><div class="stat-value">NPR ${totalRev.toLocaleString()}</div><div class="stat-label">Total Revenue</div></div></div>
+            `;
+            document.getElementById('bookingsTable').innerHTML = buildBookingsTable(filtered);
+        }
+
+        function filterBookings() {
+            const search = (document.getElementById('bookingSearch')?.value || '').toLowerCase();
+            const status = document.getElementById('bookingStatusFilter')?.value || 'all';
+            return bookingsData.filter(b => {
+                const matchSearch = !search || (b.guest_name || '').toLowerCase().includes(search) || (b.booking_number || '').toLowerCase().includes(search);
+                const matchStatus = status === 'all' || b.status === status;
+                return matchSearch && matchStatus;
+            });
+        }
+
+        async function updateBookingStatus(id, status) {
+            if (!confirm(`Change status to "${status}"?`)) return;
+            try {
+                const res = await fetch(SUPABASE_URL + '/rest/v1/bookings?id=eq.' + id, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) { await loadAllData(); loadPageData(currentPage); }
+                else alert('Update failed.');
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        function viewBookingDetail(id) {
+            const b = bookingsData.find(x => x.id === id);
+            if (!b) return;
+            const modal = document.getElementById('detailModal');
+            document.getElementById('modalContent').innerHTML = `
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h4 style="font-family:'Playfair Display',Georgia,serif;">Booking Detail</h4>
+                <table style="margin-top:10px;"><tbody>
+                    ${Object.entries(b).map(([k,v]) => `<tr><td style="font-weight:600;">${k}</td><td>${v !== null ? v : '—'}</td></tr>`).join('')}
+                </tbody></table>
+                <div style="margin-top:14px;">
+                    <label style="font-size:12px;">Update Status:</label>
+                    <select id="modalStatus" style="padding:6px;margin:0 8px;">
+                        <option value="pending" ${b.status==='pending'?'selected':''}>Pending</option>
+                        <option value="confirmed" ${b.status==='confirmed'?'selected':''}>Confirmed</option>
+                        <option value="cancelled" ${b.status==='cancelled'?'selected':''}>Cancelled</option>
+                    </select>
+                    <button class="btn-sm btn-confirm" onclick="updateBookingStatus(${b.id}, document.getElementById('modalStatus').value);closeModal();">Save</button>
+                </div>
+            `;
+            modal.classList.add('open');
+        }
+        // ========== RESTAURANT ==========
+        function buildRestaurantTable(data) {
+            if (data.length === 0) return '<p class="loading-text">No reservations found</p>';
+            return `<table><thead><tr><th>Guest</th><th>Email</th><th>Phone</th><th>Date</th><th>Time</th><th>Guests</th><th>Seating</th><th>Occasion</th><th>Status</th><th>Actions</th></tr></thead><tbody>${data.map(r => `
+                <tr>
+                    <td>${r.guest_name || '—'}</td><td>${r.email || '—'}</td><td>${r.phone || '—'}</td>
+                    <td>${r.date || '—'}</td><td>${r.time || '—'}</td><td>${r.guests || 0}</td>
+                    <td>${r.seating || '—'}</td><td>${r.occasion || '—'}</td>
+                    <td><span class="badge badge-${r.status || 'pending'}">${r.status || 'pending'}</span></td>
+                    <td>
+                        ${r.status === 'pending' ? `<button class="btn-sm btn-confirm" onclick="updateRestaurantStatus(${r.id},'confirmed')">✅</button>` : ''}
+                        ${r.status !== 'cancelled' ? `<button class="btn-sm btn-cancel" onclick="updateRestaurantStatus(${r.id},'cancelled')">❌</button>` : ''}
+                    </td>
+                </tr>`).join('')}</tbody></table>`;
+        }
+
+        function renderRestaurant() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = restaurantData.filter(r => r.date === today).length;
+            const rooftop = restaurantData.filter(r => r.seating && r.seating.includes('Rooftop')).length;
+            const indoor = restaurantData.filter(r => r.seating && r.seating.includes('Indoor')).length;
+            document.getElementById('restaurantStats').innerHTML = `
+                <div class="stat-card"><div class="stat-icon" style="background:#e8f0fe;">📋</div><div class="stat-info"><div class="stat-value">${restaurantData.length}</div><div class="stat-label">Total</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#d4edda;">📅</div><div class="stat-info"><div class="stat-value">${todayCount}</div><div class="stat-label">Today</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#fef3e0;">🌙</div><div class="stat-info"><div class="stat-value">${rooftop}</div><div class="stat-label">Rooftop</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#e6f4ea;">🏠</div><div class="stat-info"><div class="stat-value">${indoor}</div><div class="stat-label">Indoor</div></div></div>
+            `;
+            document.getElementById('restaurantTable').innerHTML = buildRestaurantTable(restaurantData);
+        }
+
+        async function updateRestaurantStatus(id, status) {
+            if (!confirm(`Change status to "${status}"?`)) return;
+            try {
+                const res = await fetch(SUPABASE_URL + '/rest/v1/restaurant_reservations?id=eq.' + id, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) { await loadAllData(); loadPageData(currentPage); }
+                else alert('Update failed.');
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        // ========== MESSAGES ==========
+        function renderMessages() {
+            document.getElementById('messagesTable').innerHTML = contactsData.length === 0 ? '<p class="loading-text">No messages</p>' : `
+                <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Subject</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead><tbody>${contactsData.map(c => `
+                <tr>
+                    <td>${c.name || '—'}</td><td>${c.email || '—'}</td><td>${c.phone || '—'}</td>
+                    <td>${c.subject || '—'}</td><td>${(c.message || '').substring(0, 50)}...</td>
+                    <td>${c.created_at ? new Date(c.created_at).toLocaleDateString() : '—'}</td>
+                    <td><button class="btn-sm btn-view" onclick="viewMessage(${c.id})">👁️</button></td>
+                </tr>`).join('')}</tbody></table>`;
+        }
+
+        function viewMessage(id) {
+            const c = contactsData.find(x => x.id === id);
+            if (!c) return;
+            const modal = document.getElementById('detailModal');
+            document.getElementById('modalContent').innerHTML = `
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h4 style="font-family:'Playfair Display',Georgia,serif;">Message from ${c.name}</h4>
+                <p style="font-size:13px;margin:4px 0;"><strong>Email:</strong> ${c.email} | <strong>Phone:</strong> ${c.phone || '—'}</p>
+                <p style="font-size:13px;margin:4px 0;"><strong>Subject:</strong> ${c.subject || '—'}</p>
+                <p style="font-size:14px;margin:12px 0;line-height:1.7;">${c.message || '—'}</p>
+                <a href="mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || '')}" class="btn-sm btn-confirm">✉️ Reply via Email</a>
+            `;
+            modal.classList.add('open');
+        }
+
+        // ========== ROOMS ==========
+        function renderRooms() {
+            document.getElementById('roomsTable').innerHTML = roomsData.length === 0 ? '<p class="loading-text">No rooms data</p>' : `
+                <table><thead><tr><th>Room Name</th><th>Price/Night</th><th>Max Guests</th><th>Available</th><th>Actions</th></tr></thead><tbody>${roomsData.map(r => `
+                <tr>
+                    <td>${r.name}</td><td>NPR ${(r.price_per_night || 0).toLocaleString()}</td><td>${r.max_guests || 0}</td>
+                    <td><span class="badge ${r.is_available ? 'badge-confirmed' : 'badge-cancelled'}">${r.is_available ? 'Yes' : 'No'}</span></td>
+                    <td><button class="btn-sm ${r.is_available ? 'btn-cancel' : 'btn-confirm'}" onclick="toggleRoomAvailability(${r.id}, ${!r.is_available})">${r.is_available ? 'Set Unavailable' : 'Set Available'}</button></td>
+                </tr>`).join('')}</tbody></table>`;
+        }
+
+        async function toggleRoomAvailability(id, newVal) {
+            try {
+                const res = await fetch(SUPABASE_URL + '/rest/v1/rooms?id=eq.' + id, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_available: newVal })
+                });
+                if (res.ok) {
+                    const idx = roomsData.findIndex(r => r.id === id);
+                    if (idx >= 0) roomsData[idx].is_available = newVal;
+                    renderRooms();
+                } else alert('Update failed.');
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        // ========== SETTINGS ==========
+        function renderSettings() {
+            document.getElementById('sysLastUpdated').textContent = new Date().toLocaleDateString();
+        }
+        function changePassword() {
+            const np = document.getElementById('newPassword').value;
+            if (np.length < 4) { document.getElementById('pwMsg').textContent = 'Password too short.'; document.getElementById('pwMsg').style.color = '#dc3545'; return; }
+            // Client-side only — in real app, update Supabase auth
+            document.getElementById('pwMsg').textContent = 'Password updated (client-side only).';
+            document.getElementById('pwMsg').style.color = '#28a745';
+            document.getElementById('newPassword').value = '';
+        }
+
+        // ========== MODAL ==========
+        function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+        document.getElementById('detailModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+        // ========== CSV EXPORT ==========
+        function exportCSV(data, filename) {
+            if (!data || data.length === 0) { alert('No data to export.'); return; }
+            const headers = Object.keys(data[0]).join(',');
+            const rows = data.map(row => Object.values(row).map(v => '"' + (v !== null ? String(v).replace(/"/g, '""') : '') + '"').join(','));
+            const csv = [headers, ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = filename + '.csv'; a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ========== HELPERS ==========
+        function timeAgo(dateStr) {
+            if (!dateStr) return '';
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 60) return mins + 'm ago';
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + 'h ago';
+            return Math.floor(hrs / 24) + 'd ago';
+        }
+
+        // ========== INIT ==========
+        function initDashboard() {
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            loadAllData().then(() => loadPageData(currentPage));
+        }
+
+        // Start
+        checkAuth();
+    </script>
+</body>
+</html>
