@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery — Luxum Hotel</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- ========== NAVBAR CSS ========== -->
+    <style>
+        :root {
+            --nav-height: 80px;
+            --nav-height-scrolled: 68px;
+        }
+        .luxum-navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            height: var(--nav-height); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent; padding: 0;
+        }
+        .luxum-navbar.scrolled {
+            height: var(--nav-height-scrolled);
+            background: rgba(10, 22, 40, 0.85); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        .luxum-navbar.hidden { transform: translateY(-100%); }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px;
+        }
+        @media (min-width: 768px) { .nav-inner { padding: 0 30px; } }
+        @media (min-width: 1024px) { .nav-inner { padding: 0 40px; } }
+        @media (min-width: 1200px) { .nav-inner { padding: 0; } }
+        .nav-logo-wrap { position: relative; z-index: 1001; }
+        .nav-logo {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem;
+            font-weight: 700; letter-spacing: 3px; color: #ffffff;
+            text-decoration: none; transition: color 0.3s ease;
+        }
+        .nav-logo .gold-x { color: #c9a84c; }
+        .nav-tagline {
+            font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 400;
+            letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.7);
+            margin-top: -2px; white-space: nowrap; transition: opacity 0.3s ease;
+        }
+        .scrolled .nav-tagline { opacity: 0.8; }
+        @media (max-width: 767px) { .nav-tagline { display: none; } .nav-logo { font-size: 1.5rem; letter-spacing: 2px; } }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a {
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+            letter-spacing: 0.8px; text-transform: uppercase; color: rgba(255,255,255,0.85);
+            text-decoration: none; position: relative; padding: 4px 0;
+            transition: color 0.3s ease; white-space: nowrap;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 0;
+            height: 1.5px; background-color: #c9a84c;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-links a:hover, .nav-links a.active { color: #c9a84c; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-cta {
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; color: #0a1628 !important;
+            background-color: #c9a84c; padding: 10px 22px !important; border-radius: 4px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 2px solid #c9a84c;
+        }
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover { background-color: #d4b65f !important; color: #0a1628 !important; box-shadow: 0 6px 20px rgba(201,168,76,0.3); transform: translateY(-1px); }
+        @media (max-width: 1023px) { .nav-links { display: none; } }
+        .nav-hamburger {
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; width: 40px; height: 40px; cursor: pointer;
+            z-index: 1001; background: none; border: none; padding: 4px; gap: 6px;
+        }
+        .nav-hamburger span {
+            display: block; width: 26px; height: 2px; background-color: #ffffff;
+            border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .nav-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        @media (min-width: 1024px) { .nav-hamburger { display: none; } }
+        .mobile-menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(10,22,40,0.97); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); z-index: 999;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.45s ease; pointer-events: none;
+        }
+        .mobile-menu-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
+        .mobile-menu-links { display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; }
+        .mobile-menu-links a {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 2rem;
+            font-weight: 600; color: #ffffff; text-decoration: none; letter-spacing: 1px;
+            transition: all 0.35s ease; opacity: 0; transform: translateY(20px);
+        }
+        .mobile-menu-overlay.open .mobile-menu-links a { opacity: 1; transform: translateY(0); }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(1) { transition-delay: 0.08s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(2) { transition-delay: 0.14s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(3) { transition-delay: 0.20s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(4) { transition-delay: 0.26s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(5) { transition-delay: 0.32s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(6) { transition-delay: 0.38s; }
+        .mobile-menu-overlay.open .mobile-menu-links a:nth-child(7) { transition-delay: 0.44s; }
+        .mobile-menu-links a:hover { color: #c9a84c; }
+        .mobile-menu-cta {
+            margin-top: 8px; font-family: 'Inter', sans-serif !important;
+            font-size: 1rem !important; font-weight: 600 !important;
+            text-transform: uppercase; letter-spacing: 2px !important;
+            color: #0a1628 !important; background-color: #c9a84c;
+            padding: 14px 36px !important; border-radius: 4px;
+        }
+        .mobile-menu-cta:hover { background-color: #d4b65f !important; color: #0a1628 !important; }
+        @media (min-width: 1024px) { .mobile-menu-overlay { display: none; } }
+    </style>
+
+    <!-- ========== FOOTER CSS ========== -->
+    <style>
+        .luxum-footer { background-color: #0a1628; color: rgba(255,255,255,0.8); font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
+        .luxum-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent 0%, #c9a84c 20%, #c9a84c 80%, transparent 100%); opacity: 0.6; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 60px 20px 40px; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; padding: 70px 30px 50px; } }
+        @media (min-width: 1024px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1.2fr 1.3fr; padding: 80px 40px 60px; } }
+        @media (min-width: 1200px) { .footer-grid { padding: 80px 0 60px; } }
+        .footer-brand .footer-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 3px; color: #ffffff; margin-bottom: 6px; display: inline-block; }
+        .footer-brand .footer-logo .gold-x { color: #c9a84c; }
+        .footer-brand .footer-tagline { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: #c9a84c; margin-bottom: 16px; }
+        .footer-brand .footer-desc { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.6); margin-bottom: 20px; max-width: 280px; }
+        .footer-socials { display: flex; gap: 14px; }
+        .footer-socials a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(201,168,76,0.35); color: #c9a84c; transition: all 0.35s ease; font-size: 15px; text-decoration: none; }
+        .footer-socials a:hover { background-color: #c9a84c; color: #0a1628; border-color: #c9a84c; transform: translateY(-3px); box-shadow: 0 6px 18px rgba(201,168,76,0.25); }
+        .footer-heading { font-family: 'Playfair Display', Georgia, serif; font-size: 1.1rem; font-weight: 600; color: #ffffff; margin-bottom: 20px; letter-spacing: 0.5px; position: relative; padding-bottom: 12px; }
+        .footer-heading::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30px; height: 2px; background-color: #c9a84c; border-radius: 1px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-links a { font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; transition: all 0.3s ease; padding-left: 0; position: relative; }
+        .footer-links a::before { content: '›'; position: absolute; left: -14px; opacity: 0; color: #c9a84c; transition: all 0.3s ease; }
+        .footer-links a:hover { color: #c9a84c; padding-left: 10px; }
+        .footer-links a:hover::before { opacity: 1; left: -8px; }
+        .footer-contact-item { display: flex; gap: 12px; margin-bottom: 14px; font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.5; align-items: flex-start; }
+        .footer-contact-item .contact-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+        .footer-contact-item a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact-item a:hover { color: #c9a84c; }
+        .newsletter-text { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; line-height: 1.6; }
+        .newsletter-form { display: flex; flex-direction: column; gap: 10px; }
+        @media (min-width: 400px) { .newsletter-form { flex-direction: row; } }
+        .newsletter-form input { flex: 1; padding: 12px 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; outline: none; transition: all 0.3s ease; min-width: 0; }
+        .newsletter-form input::placeholder { color: rgba(255,255,255,0.35); }
+        .newsletter-form input:focus { border-color: #c9a84c; background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
+        .newsletter-form button { padding: 12px 20px; background-color: #c9a84c; color: #0a1628; border: none; border-radius: 4px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; transition: all 0.35s ease; white-space: nowrap; }
+        .newsletter-form button:hover { background-color: #d4b65f; box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+        .newsletter-spam-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 10px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: 18px 20px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.4); }
+        @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; padding: 18px 30px; } }
+        @media (min-width: 1024px) { .footer-bottom { padding: 18px 40px; } }
+        @media (min-width: 1200px) { .footer-bottom { padding: 18px 0; } }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.3s ease; }
+        .footer-bottom-links a:hover { color: #c9a84c; }
+        .footer-bottom .copyright span { color: #c9a84c; }
+        @media (max-width: 767px) {
+            .footer-grid { text-align: center; } .footer-brand .footer-desc { margin-left: auto; margin-right: auto; }
+            .footer-socials { justify-content: center; } .footer-heading::after { left: 50%; transform: translateX(-50%); }
+            .footer-links a { padding-left: 0; } .footer-links a::before { display: none; }
+            .footer-links a:hover { padding-left: 0; } .footer-contact-item { justify-content: center; }
+            .footer-bottom { text-align: center; }
+        }
+    </style>
+    <!-- ========== PAGE SPECIFIC STYLES ========== -->
+    <style>
+        .gallery-hero {
+            height: 50vh; min-height: 350px;
+            background: linear-gradient(135deg, #0a1628 0%, #0f2440 40%, #c9a84c 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .gallery-hero-content { position: relative; z-index: 1; max-width: 700px; padding: 0 20px; animation: slideUpHero 0.8s ease forwards; }
+        @keyframes slideUpHero { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .breadcrumb { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+        .breadcrumb a { color: #c9a84c; text-decoration: none; }
+        .hero-label { display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4); color: #c9a84c; padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+        .gallery-hero-content h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 2.5rem; color: #fff; margin-bottom: 12px; }
+        .gallery-hero-content p { color: rgba(255,255,255,0.7); font-size: 1rem; line-height: 1.6; }
+        @media (min-width: 768px) { .gallery-hero-content h1 { font-size: 3.2rem; } }
+
+        /* Filter Bar */
+        .filter-bar {
+            position: sticky; top: var(--nav-height-scrolled, 68px); z-index: 98;
+            background: #ffffff; border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04); transition: top 0.4s ease;
+        }
+        .filter-inner {
+            max-width: 1200px; margin: 0 auto; padding: 12px 20px;
+            display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+        }
+        @media (min-width: 768px) { .filter-inner { padding: 12px 30px; } }
+        @media (min-width: 1024px) { .filter-inner { padding: 12px 40px; } }
+        @media (min-width: 1200px) { .filter-inner { padding: 12px 0; } }
+        .filter-group {
+            display: flex; flex-wrap: wrap; gap: 6px; flex: 1;
+            overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .filter-group::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            padding: 7px 14px; border: 1px solid #dee2e6; background: #fff;
+            border-radius: 50px; font-size: 12px; font-weight: 500; cursor: pointer;
+            white-space: nowrap; transition: all 0.3s ease; color: #1a1a2e;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-btn:hover { border-color: #c9a84c; color: #c9a84c; }
+        .filter-btn.active { background: #c9a84c; color: #0a1628; border-color: #c9a84c; font-weight: 600; }
+        .filter-count { font-size: 12px; color: #6c757d; white-space: nowrap; margin-left: auto; }
+        .filter-count span { font-weight: 700; color: #c9a84c; }
+
+        /* Gallery Grid */
+        .gallery-section { padding: 30px 20px 60px; max-width: 1200px; margin: 0 auto; }
+        @media (min-width: 768px) { .gallery-section { padding: 40px 30px 80px; } }
+        @media (min-width: 1024px) { .gallery-section { padding: 40px 40px 80px; } }
+        @media (min-width: 1200px) { .gallery-section { padding: 40px 0 80px; } }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-auto-rows: 220px;
+            gap: 14px;
+        }
+        @media (min-width: 600px) {
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 240px; gap: 16px; }
+        }
+        @media (min-width: 1024px) {
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 250px; gap: 18px; }
+        }
+        .gallery-item {
+            border-radius: 10px; position: relative; overflow: hidden; cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1); display: flex;
+            align-items: center; justify-content: center; border: 2px solid transparent;
+        }
+        .gallery-item:hover { transform: scale(1.025); border-color: #c9a84c; box-shadow: 0 12px 30px rgba(0,0,0,0.2); }
+        .gallery-item.large { grid-row: span 2; }
+        @media (max-width: 599px) { .gallery-item.large { grid-row: span 1; } }
+        .gallery-item-icon { font-size: 3rem; position: relative; z-index: 1; transition: all 0.35s ease; }
+        .gallery-item:hover .gallery-item-icon { transform: scale(1.2); opacity: 0.5; }
+        .gallery-overlay {
+            position: absolute; inset: 0; background: rgba(10,22,40,0.7);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.35s ease; z-index: 2; padding: 16px; text-align: center;
+        }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        .gallery-overlay .caption { color: #fff; font-family: 'Playfair Display', Georgia, serif; font-size: 1rem; margin-bottom: 6px; }
+        .gallery-overlay .tag { background: #c9a84c; color: #0a1628; padding: 3px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .gallery-overlay .view-icon { font-size: 1.8rem; color: #c9a84c; margin-top: 8px; }
+
+        /* Lightbox */
+        .lightbox-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10,22,40,0.95); backdrop-filter: blur(10px);
+            z-index: 3000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.4s ease;
+        }
+        .lightbox-overlay.open { opacity: 1; visibility: visible; }
+        .lightbox-content {
+            max-width: 800px; width: 90%; text-align: center;
+            transform: translateY(20px); transition: transform 0.4s ease;
+        }
+        .lightbox-overlay.open .lightbox-content { transform: translateY(0); }
+        .lightbox-image {
+            width: 100%; height: 350px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; position: relative;
+            border: 2px solid rgba(201,168,76,0.4);
+        }
+        @media (min-width: 600px) { .lightbox-image { height: 450px; } }
+        @media (min-width: 1024px) { .lightbox-image { height: 500px; } }
+        .lightbox-image .lb-icon { font-size: 5rem; }
+        .lightbox-caption { color: #fff; font-family: 'Playfair Display', Georgia, serif; font-size: 1.3rem; margin-top: 16px; }
+        .lightbox-tag { display: inline-block; background: #c9a84c; color: #0a1628; padding: 4px 14px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-top: 8px; }
+        .lightbox-counter { color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 10px; }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 24px; font-size: 2rem;
+            color: #fff; cursor: pointer; z-index: 3001; transition: color 0.3s ease;
+            background: none; border: none; font-family: 'Inter', sans-serif; line-height: 1;
+        }
+        .lightbox-close:hover { color: #c9a84c; }
+        .lightbox-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 2rem; color: #fff; cursor: pointer; z-index: 3001;
+            background: rgba(0,0,0,0.4); border: none; width: 44px; height: 60px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; border-radius: 4px;
+        }
+        .lightbox-nav:hover { background: rgba(201,168,76,0.6); color: #0a1628; }
+        .lightbox-prev { left: 16px; }
+        .lightbox-next { right: 16px; }
+        @media (max-width: 600px) {
+            .lightbox-nav { width: 36px; height: 48px; font-size: 1.5rem; }
+            .lightbox-prev { left: 8px; } .lightbox-next { right: 8px; }
+        }
+
+        body.no-scroll { overflow: hidden; }
+
+        /* Instagram Section */
+        .instagram-section { background: #0a1628; padding: 60px 20px; text-align: center; color: #fff; }
+        .instagram-section h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; margin-bottom: 8px; }
+        .instagram-section p { color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+        .instagram-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 500px; margin: 0 auto 24px; }
+        @media (min-width: 480px) { .instagram-grid { grid-template-columns: repeat(6, 1fr); max-width: 600px; } }
+        .instagram-tile { aspect-ratio: 1; border-radius: 6px; transition: all 0.3s ease; cursor: pointer; }
+        .instagram-tile:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+        @media (min-width: 768px) { .instagram-section h2 { font-size: 2.2rem; } }
+
+        /* Fade animation for filtering */
+        .gallery-item { transition: opacity 0.4s ease, transform 0.4s ease; }
+        .gallery-item.hidden-card { opacity: 0; transform: scale(0.9); pointer-events: none; position: absolute; visibility: hidden; }
+    </style>
+</head>
+<body>
+    <!-- ========== NAVBAR ========== -->
+    <nav class="luxum-navbar scrolled" id="luxumNavbar">
+        <div class="nav-inner">
+            <div class="nav-logo-wrap">
+                <a href="index.html" class="nav-logo">LU<span class="gold-x">X</span>UM</a>
+                <p class="nav-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+                <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+                <a href="gallery.html" class="active">Gallery</a>
+                <a href="#contact">Contact</a>
+                <a href="booking.html" class="nav-cta">Book Now</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-links">
+            <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+            <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+            <a href="gallery.html">Gallery</a><a href="#contact">Contact</a>
+            <a href="booking.html" class="mobile-menu-cta">Book Now</a>
+        </div>
+    </div>
+
+    <!-- ========== HERO ========== -->
+    <section class="gallery-hero">
+        <div class="gallery-hero-content">
+            <div class="breadcrumb"><a href="index.html">Home</a> › Gallery</div>
+            <div class="hero-label">Visual Journey</div>
+            <h1>Hotel Gallery</h1>
+            <p>Explore the beauty and elegance of Luxum Hotel through our curated collection</p>
+            <hr style="width:60px; height:3px; background:#c9a84c; border:none; margin:20px auto; border-radius:2px;">
+        </div>
+    </section>
+
+    <!-- ========== FILTER BAR ========== -->
+    <div class="filter-bar" id="filterBar">
+        <div class="filter-inner">
+            <div class="filter-group" id="filterGroup">
+                <button class="filter-btn active" data-filter="all">All Photos</button>
+                <button class="filter-btn" data-filter="rooms">Rooms & Suites</button>
+                <button class="filter-btn" data-filter="restaurant">Restaurant & Dining</button>
+                <button class="filter-btn" data-filter="pool">Pool & Spa</button>
+                <button class="filter-btn" data-filter="events">Events & Banquet</button>
+                <button class="filter-btn" data-filter="exterior">Hotel Exterior</button>
+                <button class="filter-btn" data-filter="views">Kathmandu Views</button>
+            </div>
+            <div class="filter-count">Showing <span id="photoCount">24</span> photos</div>
+        </div>
+    </div>
+
+    <!-- ========== GALLERY GRID ========== -->
+    <div class="gallery-section">
+        <div class="gallery-grid" id="galleryGrid">
+
+            <!-- ROOMS & SUITES (6) -->
+            <div class="gallery-item large" data-category="rooms" data-index="0" style="background:linear-gradient(135deg, #1a1a2e 0%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🛏️</span>
+                <div class="gallery-overlay"><p class="caption">Presidential Suite — Bedroom</p><span class="tag">Presidential Suite</span><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="rooms" data-index="1" style="background:linear-gradient(135deg, #0a1628 0%, #1a3a2a 100%);">
+                <span class="gallery-item-icon">🛏️</span>
+                <div class="gallery-overlay"><p class="caption">Junior Suite — Living Area</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="rooms" data-index="2" style="background:linear-gradient(135deg, #2c1810 0%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🛏️</span>
+                <div class="gallery-overlay"><p class="caption">Executive Suite — Private Balcony</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="rooms" data-index="3" style="background:linear-gradient(135deg, #0d2137 0%, #1a3a2a 100%);">
+                <span class="gallery-item-icon">🛏️</span>
+                <div class="gallery-overlay"><p class="caption">Deluxe Room — Interior</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="rooms" data-index="4" style="background:linear-gradient(135deg, #1a2a1a 0%, #c9a84c 50%, #0a1628 100%);">
+                <span class="gallery-item-icon">🛏️</span>
+                <div class="gallery-overlay"><p class="caption">Superior Room — Luxury Bathroom</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="rooms" data-index="5" style="background:linear-gradient(135deg, #0a1628 0%, #2c3e50 100%);">
+                <span class="gallery-item-icon">🛏️</span>
+                <div class="gallery-overlay"><p class="caption">Standard Room — City View</p><span class="view-icon">🔍</span></div>
+            </div>
+
+            <!-- RESTAURANT & DINING (5) -->
+            <div class="gallery-item large" data-category="restaurant" data-index="6" style="background:linear-gradient(135deg, #000000 0%, #1a3a2a 50%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🍽️</span>
+                <div class="gallery-overlay"><p class="caption">Restaurant Luxum — Rooftop Dinner</p><span class="tag">Rooftop</span><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="restaurant" data-index="7" style="background:linear-gradient(135deg, #0a1628 0%, #2c1810 100%);">
+                <span class="gallery-item-icon">🍽️</span>
+                <div class="gallery-overlay"><p class="caption">Restaurant Luxum — Indoor Elegance</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="restaurant" data-index="8" style="background:linear-gradient(135deg, #1a0a00 0%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🍽️</span>
+                <div class="gallery-overlay"><p class="caption">Himalayan Lamb Rack — Chef's Special</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="restaurant" data-index="9" style="background:linear-gradient(135deg, #0d0d1a 0%, #1a3a2a 100%);">
+                <span class="gallery-item-icon">🍽️</span>
+                <div class="gallery-overlay"><p class="caption">Bar & Lounge — Premium Spirits</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="restaurant" data-index="10" style="background:linear-gradient(135deg, #1a1000 0%, #c9a84c 70%, #0a1628 100%);">
+                <span class="gallery-item-icon">🍽️</span>
+                <div class="gallery-overlay"><p class="caption">Sunday Brunch — International Buffet</p><span class="view-icon">🔍</span></div>
+            </div>
+
+            <!-- POOL & SPA (4) -->
+            <div class="gallery-item large" data-category="pool" data-index="11" style="background:linear-gradient(135deg, #001a33 0%, #0066cc 50%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🏊</span>
+                <div class="gallery-overlay"><p class="caption">Infinity Pool — City Panorama</p><span class="tag">Rooftop</span><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="pool" data-index="12" style="background:linear-gradient(135deg, #cc6600 0%, #001a33 100%);">
+                <span class="gallery-item-icon">🏊</span>
+                <div class="gallery-overlay"><p class="caption">Rooftop Pool — Sunset Views</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="pool" data-index="13" style="background:linear-gradient(135deg, #1a0a0a 0%, #1a3a2a 100%);">
+                <span class="gallery-item-icon">🏊</span>
+                <div class="gallery-overlay"><p class="caption">Spa & Massage — Treatment Suite</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="pool" data-index="14" style="background:linear-gradient(135deg, #0a1a0a 0%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🏊</span>
+                <div class="gallery-overlay"><p class="caption">Yoga Room — Morning Session</p><span class="view-icon">🔍</span></div>
+            </div>
+
+            <!-- EVENTS & BANQUET (4) -->
+            <div class="gallery-item large" data-category="events" data-index="15" style="background:linear-gradient(135deg, #0a1628 0%, #c9a84c 50%, #1a3a2a 100%);">
+                <span class="gallery-item-icon">🎉</span>
+                <div class="gallery-overlay"><p class="caption">Grand Banquet Hall — Wedding Setup</p><span class="tag">Capacity 200</span><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="events" data-index="16" style="background:linear-gradient(135deg, #1a1a2e 0%, #0a1628 100%);">
+                <span class="gallery-item-icon">🎉</span>
+                <div class="gallery-overlay"><p class="caption">Conference Room — Business Event</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="events" data-index="17" style="background:linear-gradient(135deg, #1a0a00 0%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🎉</span>
+                <div class="gallery-overlay"><p class="caption">Private Dining — Corporate Dinner</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="events" data-index="18" style="background:linear-gradient(135deg, #000000 0%, #1a3a2a 100%);">
+                <span class="gallery-item-icon">🎉</span>
+                <div class="gallery-overlay"><p class="caption">Rooftop Terrace — Private Event</p><span class="view-icon">🔍</span></div>
+            </div>
+
+            <!-- HOTEL EXTERIOR (3) -->
+            <div class="gallery-item large" data-category="exterior" data-index="19" style="background:linear-gradient(135deg, #0a1628 0%, #1a3a2a 30%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🏨</span>
+                <div class="gallery-overlay"><p class="caption">Luxum Hotel — Kamaladi, Kathmandu</p><span class="tag">5 Star</span><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="exterior" data-index="20" style="background:linear-gradient(135deg, #1a1000 0%, #c9a84c 100%);">
+                <span class="gallery-item-icon">🏨</span>
+                <div class="gallery-overlay"><p class="caption">Grand Lobby — Welcome to Luxum</p><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="exterior" data-index="21" style="background:linear-gradient(135deg, #000000 0%, #0a1628 100%);">
+                <span class="gallery-item-icon">🏨</span>
+                <div class="gallery-overlay"><p class="caption">Luxum Hotel — Night Illumination</p><span class="view-icon">🔍</span></div>
+            </div>
+
+            <!-- KATHMANDU VIEWS (2) -->
+            <div class="gallery-item large" data-category="views" data-index="22" style="background:linear-gradient(135deg, #cc3300 0%, #ff9900 50%, #0a1628 100%);">
+                <span class="gallery-item-icon">🏔️</span>
+                <div class="gallery-overlay"><p class="caption">Himalayan Sunrise — View from Luxum</p><span class="tag">Exclusive View</span><span class="view-icon">🔍</span></div>
+            </div>
+            <div class="gallery-item" data-category="views" data-index="23" style="background:linear-gradient(135deg, #1a3a2a 0%, #0a1628 100%);">
+                <span class="gallery-item-icon">🏔️</span>
+                <div class="gallery-overlay"><p class="caption">Kathmandu Valley — City Panorama</p><span class="view-icon">🔍</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== INSTAGRAM SECTION ========== -->
+    <section class="instagram-section">
+        <div class="container">
+            <h2>Follow Our Journey</h2>
+            <p>@luxumhotel on Instagram</p>
+            <div class="instagram-grid">
+                <div class="instagram-tile" style="background:linear-gradient(135deg, #0a1628, #c9a84c);"></div>
+                <div class="instagram-tile" style="background:linear-gradient(135deg, #1a3a2a, #c9a84c);"></div>
+                <div class="instagram-tile" style="background:linear-gradient(135deg, #0a1628, #1a3a2a);"></div>
+                <div class="instagram-tile" style="background:linear-gradient(135deg, #c9a84c, #0a1628);"></div>
+                <div class="instagram-tile" style="background:linear-gradient(135deg, #1a3a2a, #0a1628);"></div>
+                <div class="instagram-tile" style="background:linear-gradient(135deg, #0a1628, #c9a84c);"></div>
+            </div>
+            <a href="#" class="btn-secondary" style="color:#c9a84c; border-color:#c9a84c;">Follow on Instagram</a>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="luxum-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">LU<span class="gold-x">X</span>UM</div>
+                <p class="footer-tagline">Where Luxury Meets the Heart of Kathmandu</p>
+                <p class="footer-desc">Experience unparalleled luxury in the cultural heart of Nepal. Luxum Hotel blends timeless elegance with warm Nepali hospitality for an unforgettable stay.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook">f</a><a href="#" aria-label="Instagram">◉</a>
+                    <a href="#" aria-label="Twitter">𝕏</a><a href="#" aria-label="TripAdvisor">★</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Quick Links</h4>
+                <div class="footer-links">
+                    <a href="index.html">Home</a><a href="rooms.html">Rooms</a>
+                    <a href="restaurant.html">Restaurant</a><a href="amenities.html">Amenities</a>
+                    <a href="gallery.html">Gallery</a><a href="booking.html">Booking</a><a href="#contact">Contact</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Contact</h4>
+                <div class="footer-contact-item"><span class="contact-icon">📍</span><span>Kamaladi, Kathmandu 44600, Nepal</span></div>
+                <div class="footer-contact-item"><span class="contact-icon">📞</span><a href="tel:+97714234567">+977-1-4234567</a></div>
+                <div class="footer-contact-item"><span class="contact-icon">✉️</span><a href="mailto:info@luxumhotel.com">info@luxumhotel.com</a></div>
+                <div class="footer-contact-item"><span class="contact-icon">🕐</span><span>Check-in: 2PM<br>Check-out: 12PM</span></div>
+            </div>
+            <div>
+                <h4 class="footer-heading">Stay Updated</h4>
+                <p class="newsletter-text">Subscribe for exclusive offers, seasonal packages, and luxury travel inspiration.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+                <p class="newsletter-spam-note">No spam, ever. Unsubscribe anytime.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">Copyright &copy; <span>2026</span> Luxum Hotel. All rights reserved.</div>
+            <div class="footer-bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Admin</a></div>
+        </div>
+    </footer>
+    <!-- ========== LIGHTBOX ========== -->
+    <div class="lightbox-overlay" id="lightboxOverlay">
+        <button class="lightbox-close" id="lightboxClose">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+        <div class="lightbox-content" id="lightboxContent">
+            <div class="lightbox-image" id="lightboxImage"><span class="lb-icon"></span></div>
+            <p class="lightbox-caption" id="lightboxCaption"></p>
+            <span class="lightbox-tag" id="lightboxTag" style="display:none;"></span>
+            <p class="lightbox-counter" id="lightboxCounter"></p>
+        </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // ========== NAVBAR JS ==========
+        (function() {
+            const navbar = document.getElementById('luxumNavbar');
+            const hamburger = document.getElementById('navHamburger');
+            const mobileMenu = document.getElementById('mobileMenuOverlay');
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+            function updateNavOnScroll() {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > 50) { navbar.classList.add('scrolled'); } else { navbar.classList.remove('scrolled'); }
+                if (!mobileMenu.classList.contains('open')) {
+                    if (currentScrollY > lastScrollY && currentScrollY > 300) { navbar.classList.add('hidden'); }
+                    else { navbar.classList.remove('hidden'); }
+                }
+                lastScrollY = currentScrollY; ticking = false;
+            }
+            window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(updateNavOnScroll); ticking = true; } });
+            function openMenu() { mobileMenu.classList.add('open'); hamburger.classList.add('active'); document.body.style.overflow = 'hidden'; }
+            function closeMenu() { mobileMenu.classList.remove('open'); hamburger.classList.remove('active'); document.body.style.overflow = ''; }
+            hamburger.addEventListener('click', () => { mobileMenu.classList.contains('open') ? closeMenu() : openMenu(); });
+            mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
+        })();
+
+        // ========== FILTERING ==========
+        const filterButtons = document.querySelectorAll('#filterGroup .filter-btn');
+        const galleryItems = document.querySelectorAll('#galleryGrid .gallery-item');
+        const photoCountSpan = document.getElementById('photoCount');
+        let currentFilter = 'all';
+        const visibleItems = new Set(galleryItems); // track visible items for lightbox
+
+        function updateVisibleSet() {
+            visibleItems.clear();
+            galleryItems.forEach(item => {
+                if (item.style.display !== 'none' && !item.classList.contains('hidden-card')) {
+                    visibleItems.add(item);
+                }
+            });
+        }
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.getAttribute('data-filter');
+
+                let count = 0;
+                galleryItems.forEach(item => {
+                    const category = item.getAttribute('data-category');
+                    if (currentFilter === 'all' || category === currentFilter) {
+                        item.classList.remove('hidden-card');
+                        item.style.display = '';
+                        count++;
+                    } else {
+                        item.classList.add('hidden-card');
+                        setTimeout(() => { if (item.classList.contains('hidden-card')) item.style.display = 'none'; }, 400);
+                    }
+                });
+                photoCountSpan.textContent = count;
+                updateVisibleSet();
+            });
+        });
+        updateVisibleSet();
+
+        // ========== LIGHTBOX ==========
+        const lightboxOverlay = document.getElementById('lightboxOverlay');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const lightboxTag = document.getElementById('lightboxTag');
+        const lightboxCounter = document.getElementById('lightboxCounter');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const lightboxPrev = document.getElementById('lightboxPrev');
+        const lightboxNext = document.getElementById('lightboxNext');
+        let currentLightboxIndex = 0;
+        let lightboxItemsArray = [];
+
+        function openLightbox(index) {
+            lightboxItemsArray = Array.from(visibleItems);
+            if (lightboxItemsArray.length === 0) return;
+            currentLightboxIndex = Math.max(0, Math.min(index, lightboxItemsArray.length - 1));
+            updateLightboxContent();
+            lightboxOverlay.classList.add('open');
+            document.body.classList.add('no-scroll');
+        }
+
+        function closeLightbox() {
+            lightboxOverlay.classList.remove('open');
+            document.body.classList.remove('no-scroll');
+        }
+
+        function updateLightboxContent() {
+            const item = lightboxItemsArray[currentLightboxIndex];
+            if (!item) return;
+            const bg = item.style.background || getComputedStyle(item).background;
+            const icon = item.querySelector('.gallery-item-icon')?.textContent || '';
+            const captionEl = item.querySelector('.caption');
+            const tagEl = item.querySelector('.tag');
+            const caption = captionEl ? captionEl.textContent : '';
+            const tag = tagEl ? tagEl.textContent : '';
+
+            lightboxImage.style.background = bg;
+            lightboxImage.querySelector('.lb-icon').textContent = icon;
+            lightboxCaption.textContent = caption;
+            if (tag) { lightboxTag.textContent = tag; lightboxTag.style.display = 'inline-block'; }
+            else { lightboxTag.style.display = 'none'; }
+            lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${lightboxItemsArray.length}`;
+        }
+
+        function navigateLightbox(direction) {
+            if (lightboxItemsArray.length === 0) return;
+            currentLightboxIndex = (currentLightboxIndex + direction + lightboxItemsArray.length) % lightboxItemsArray.length;
+            updateLightboxContent();
+        }
+
+        // Click handlers for gallery items
+        galleryItems.forEach((item, idx) => {
+            item.addEventListener('click', () => {
+                updateVisibleSet();
+                const visibleArr = Array.from(visibleItems);
+                const visibleIdx = visibleArr.indexOf(item);
+                openLightbox(visibleIdx >= 0 ? visibleIdx : 0);
+            });
+        });
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxOverlay.addEventListener('click', (e) => {
+            if (e.target === lightboxOverlay) closeLightbox();
+        });
+        lightboxPrev.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(-1); });
+        lightboxNext.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(1); });
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightboxOverlay.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+
+        // Touch swipe support
+        let touchStartX = 0;
+        lightboxOverlay.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+        lightboxOverlay.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                navigateLightbox(diff > 0 ? 1 : -1);
+            }
+        });
+    </script>
+</body>
+</html>
